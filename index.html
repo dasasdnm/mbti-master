@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MBTI 高阶版 · 人格深处</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230B0E1A'/%3E%3Cpath d='M20 44 L32 16 L44 44' fill='none' stroke='%23E8B87A' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='34' r='4' fill='%23C9D4F0'/%3E%3C/svg%3E">
+<style>
+/* ============ 基础 ============ */
+:root{
+  --bg0:#070A14; --bg1:#0B0E1A; --bg2:#12162B;
+  --ink:#E9EDF8; --ink-dim:#A7B0CA; --ink-faint:#6E7694;
+  --amber:#E8B87A; --amber-soft:#F2D5A7; --amber-deep:#B98A4B;
+  --violet:#8B7FD4; --line:rgba(232,184,122,.16); --line-soft:rgba(201,212,240,.12);
+  --card:rgba(18,22,43,.72); --card-hi:rgba(30,36,66,.85);
+  --serif:"Akzidenz-Grotesk","Akzidenz Grotesk","AkzidenzGrotesk","Helvetica Neue",Arial,"Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",serif;
+  --sans:"Akzidenz-Grotesk","Akzidenz Grotesk","AkzidenzGrotesk","Noto Sans SC","Microsoft YaHei","PingFang SC","Helvetica Neue",sans-serif;
+  --r-lg:22px; --r-md:16px; --r-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg0); color:var(--ink);
+  min-height:100vh; line-height:1.75; overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* 星空背景 */
+#sky{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(139,127,212,.16), transparent 60%),
+    radial-gradient(900px 600px at 10% 110%, rgba(232,184,122,.09), transparent 55%),
+    linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 45%, var(--bg2) 100%);
+}
+#sky::after{content:"";position:absolute;inset:0;
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 22%, rgba(233,237,248,.8), transparent 50%),
+    radial-gradient(1.2px 1.2px at 32% 68%, rgba(233,237,248,.55), transparent 50%),
+    radial-gradient(1.8px 1.8px at 52% 14%, rgba(233,237,248,.7), transparent 50%),
+    radial-gradient(1.2px 1.2px at 68% 44%, rgba(233,237,248,.5), transparent 50%),
+    radial-gradient(1.6px 1.6px at 84% 72%, rgba(233,237,248,.65), transparent 50%),
+    radial-gradient(1.2px 1.2px at 24% 88%, rgba(233,237,248,.5), transparent 50%),
+    radial-gradient(1px 1px at 92% 26%, rgba(233,237,248,.55), transparent 50%),
+    radial-gradient(1.4px 1.4px at 44% 46%, rgba(233,237,248,.45), transparent 50%),
+    radial-gradient(1px 1px at 74% 90%, rgba(233,237,248,.4), transparent 50%),
+    radial-gradient(1.2px 1.2px at 6% 52%, rgba(233,237,248,.5), transparent 50%);
+}
+#sky::before{content:"";position:absolute;inset:0;opacity:.5;
+  background:radial-gradient(500px 300px at 50% 30%, rgba(232,184,122,.08), transparent 70%);
+}
+main{position:relative;z-index:1;min-height:100vh}
+.view{display:none;max-width:720px;margin:0 auto;padding:28px 20px 64px;min-height:100vh;animation:rise .5s ease both}
+.view.active{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ============ 组件 ============ */
+.brand{display:flex;align-items:center;gap:10px;justify-content:center;padding:18px 0 6px}
+.brand .mark{width:38px;height:38px;flex:none}
+.brand .word{font-family:var(--serif);font-size:19px;letter-spacing:.35em;color:var(--ink);font-weight:600}
+.brand .word small{display:block;font-size:10px;letter-spacing:.5em;color:var(--ink-faint);font-family:var(--sans);font-weight:400;text-align:center}
+.kicker{font-size:12px;letter-spacing:.42em;color:var(--amber);text-align:center;margin:26px 0 10px}
+h1.title{font-family:var(--serif);font-size:clamp(26px,6vw,40px);line-height:1.45;text-align:center;font-weight:700;letter-spacing:.06em}
+h1.title .hl{color:var(--amber-soft)}
+.sub{color:var(--ink-dim);text-align:center;margin:14px auto 0;max-width:520px;font-size:15px}
+.btn{display:block;width:100%;max-width:340px;margin:26px auto 0;padding:15px 22px;border-radius:999px;
+  background:linear-gradient(135deg,var(--amber) 0%,var(--amber-deep) 100%);color:#17120A;
+  font-size:16px;font-weight:700;letter-spacing:.14em;border:none;cursor:pointer;font-family:var(--sans);
+  transition:transform .15s ease,box-shadow .15s ease;text-align:center}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(232,184,122,.28)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{background:transparent;color:var(--amber-soft);border:1px solid var(--line)}
+.btn.ghost:hover{box-shadow:none;background:rgba(232,184,122,.06)}
+.btn.small{max-width:200px;padding:11px 18px;font-size:14px;margin:14px auto 0}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.card{background:var(--card);border:1px solid var(--line-soft);border-radius:var(--r-lg);padding:22px;margin-top:22px;backdrop-filter:blur(6px)}
+.feats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:24px}
+.feat{background:var(--card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:16px 14px;text-align:left}
+.feat svg{width:22px;height:22px;stroke:var(--amber);margin-bottom:8px}
+.feat b{display:block;font-size:14px;margin-bottom:4px;color:var(--ink)}
+.feat span{font-size:12px;color:var(--ink-dim);line-height:1.6}
+.note{font-size:12px;color:var(--ink-faint);text-align:center;margin-top:18px;line-height:1.8}
+.rule{width:56px;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent);margin:26px auto}
+.quote{font-family:var(--serif);font-size:15px;color:var(--ink-dim);text-align:center;line-height:2;max-width:480px;margin:0 auto}
+
+/* 输入 */
+.field{margin-top:20px}
+.field label{display:block;font-size:13px;color:var(--ink-dim);letter-spacing:.1em;margin-bottom:8px}
+.input{width:100%;background:rgba(7,10,20,.6);border:1px solid var(--line-soft);border-radius:var(--r-md);
+  padding:14px 16px;color:var(--ink);font-size:16px;font-family:var(--sans);letter-spacing:.12em;outline:none;transition:border-color .2s}
+.input:focus{border-color:var(--amber)}
+.input::placeholder{color:var(--ink-faint);letter-spacing:.05em}
+.hint{font-size:12.5px;color:var(--ink-faint);margin-top:10px;line-height:1.8}
+.hint.ok{color:#9CC5A1}
+.hint.err{color:#E58F8F}
+
+/* 类型选择 */
+.type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px}
+.type-cell{background:var(--card);border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:12px 4px;text-align:center;cursor:pointer;transition:all .15s}
+.type-cell .code{font-family:var(--serif);font-size:15px;font-weight:700;letter-spacing:.08em;color:var(--ink)}
+.type-cell .cn{font-size:11px;color:var(--ink-faint);margin-top:2px}
+.type-cell:hover{border-color:var(--amber);transform:translateY(-2px)}
+.type-cell.sel{border-color:var(--amber);background:rgba(232,184,122,.1);box-shadow:0 0 0 1px var(--amber)}
+.seg{display:flex;gap:8px;margin-top:22px}
+.seg button{flex:1;padding:12px 8px;border-radius:var(--r-md);border:1px solid var(--line-soft);background:var(--card);color:var(--ink-dim);font-size:13px;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.seg button.on{border-color:var(--amber);color:var(--amber-soft);background:rgba(232,184,122,.08)}
+.q-brief{font-family:var(--serif);font-size:15px;color:var(--ink-dim);text-align:center;margin-top:16px}
+
+/* 答题 */
+.quiz-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.q-dim{font-size:12px;letter-spacing:.28em;color:var(--amber)}
+.q-count{font-size:12px;color:var(--ink-faint);letter-spacing:.1em}
+.bar{height:4px;border-radius:4px;background:rgba(233,237,248,.08);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber-deep),var(--amber-soft));border-radius:4px;transition:width .35s ease}
+.q-card{background:var(--card-hi);border:1px solid var(--line-soft);border-radius:var(--r-lg);padding:26px 20px;margin-top:20px;min-height:230px;display:flex;flex-direction:column}
+.q-text{font-family:var(--serif);font-size:clamp(17px,4.6vw,21px);line-height:1.9;flex:1;color:var(--ink)}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:22px}
+.scale button{border:1px solid var(--line-soft);background:rgba(7,10,20,.5);color:var(--ink-faint);border-radius:var(--r-sm);height:44px;font-size:13px;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.scale button:hover{border-color:var(--amber);color:var(--amber-soft)}
+.scale button.on{background:var(--amber);color:#17120A;border-color:var(--amber);font-weight:700}
+.scale-lab{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-faint);margin-top:8px}
+.q-nav{display:flex;gap:12px;margin-top:24px}
+.q-nav .btn{margin:0;flex:1}
+.sel-sum{font-size:13px;color:var(--ink-dim);text-align:center;margin-top:12px;min-height:22px}
+
+/* 结果 */
+.result-head{text-align:center;margin-top:10px}
+.stamp{display:inline-block;padding:8px 20px;border:1px solid var(--amber);border-radius:999px;color:var(--amber-soft);font-size:13px;letter-spacing:.3em;margin-top:16px}
+.stage-badge{display:inline-block;padding:10px 24px;border-radius:999px;margin-top:18px;font-size:15px;letter-spacing:.2em;font-weight:700}
+.stage-1{background:rgba(139,127,212,.18);color:#C7C0F0;border:1px solid rgba(139,127,212,.4)}
+.stage-2{background:rgba(232,184,122,.14);color:var(--amber-soft);border:1px solid rgba(232,184,122,.4)}
+.stage-3{background:rgba(156,197,161,.14);color:#9CC5A1;border:1px solid rgba(156,197,161,.4)}
+.stage-4{background:rgba(233,237,248,.14);color:var(--ink);border:1px solid rgba(233,237,248,.4)}
+.report-title{font-family:var(--serif);font-size:clamp(21px,5.4vw,28px);text-align:center;margin-top:18px;line-height:1.6}
+.report-lead{font-family:var(--serif);font-size:16px;color:var(--amber-soft);text-align:center;margin-top:12px;line-height:2}
+.rp{font-size:15px;color:var(--ink-dim);line-height:2.1;margin-top:18px;white-space:pre-line}
+.rp b{color:var(--ink);font-weight:700}
+.gold{background:rgba(232,184,122,.08);border-left:3px solid var(--amber);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:18px 18px;margin-top:22px;font-family:var(--serif);font-size:15px;color:var(--amber-soft);line-height:2.1}
+.advice{background:rgba(139,127,212,.08);border-left:3px solid var(--violet);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:16px 18px;margin-top:14px;font-size:14px;color:var(--ink-dim);line-height:2}
+.dim-bars{margin-top:24px}
+.dim-row{margin-bottom:14px}
+.dim-row .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-dim);margin-bottom:6px}
+.dim-row .lab b{color:var(--ink);font-weight:600}
+.dim-row .lab em{font-style:normal;color:var(--amber-soft);font-family:var(--serif)}
+.track{height:8px;border-radius:8px;background:rgba(233,237,248,.07);overflow:hidden}
+.track i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#8B7FD4,var(--amber));transition:width .8s ease}
+.arch{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:22px}
+.arch .code{font-family:var(--serif);font-size:52px;font-weight:700;letter-spacing:.12em;background:linear-gradient(160deg,var(--amber-soft),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.arch .meta{font-size:12px;color:var(--ink-faint);line-height:1.9;letter-spacing:.12em}
+.arch .meta b{color:var(--ink-dim);font-weight:600}
+
+/* 档案卡画布 */
+.canvas-wrap{margin-top:22px;border:1px dashed var(--line);border-radius:var(--r-lg);padding:14px;text-align:center}
+#cardCanvas{width:100%;max-width:420px;height:auto;border-radius:var(--r-md);display:block;margin:0 auto}
+.save-tip{font-size:12px;color:var(--ink-faint);margin-top:10px;line-height:1.8}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%) translateY(20px);background:rgba(30,36,66,.96);border:1px solid var(--line);color:var(--ink);font-size:14px;padding:12px 22px;border-radius:999px;opacity:0;pointer-events:none;transition:all .3s ease;z-index:99;max-width:86vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* 结尾 */
+.foot{text-align:center;font-size:11px;color:var(--ink-faint);letter-spacing:.2em;margin-top:44px;line-height:2}
+.dim-tag{font-size:11px;color:var(--ink-faint);letter-spacing:.3em;margin-top:20px;text-align:center}
+
+@media (min-width:768px){
+  .feats{grid-template-columns:repeat(4,1fr)}
+  .type-grid{grid-template-columns:repeat(8,1fr)}
+  .view{padding-top:44px}
+}
+</style>
+</head>
+<body>
+<div id="sky"></div>
+<main>
+
+<!-- ===================== 视图：介绍 ===================== -->
+<section id="view-intro" class="view active">
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" stroke="rgba(232,184,122,.5)" stroke-width="1.5"/>
+      <path d="M20 44 L32 16 L44 44" stroke="#E8B87A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="32" cy="34" r="4" fill="#C9D4F0"/>
+    </svg>
+    <div class="word">MBTI 高阶版<small>人格深处</small></div>
+  </div>
+  <div class="kicker">DEEP PERSONALITY</div>
+  <h1 class="title">看见你人格深处，<br><span class="hl">未被驯服的光</span></h1>
+  <p class="sub">MBTI 只告诉你「你是谁」——这里要告诉你「你的光被什么挡住」。16 种人格 × 64 道短板之问，为你照见盲区，也为你写一封来自人格深处的信。</p>
+  <div class="feats">
+    <div class="feat">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 3l2.1 6.3L21 9l-5.4 4.2L17.4 20 12 16.2 6.6 20l1.8-6.8L3 9l6.9.3L12 3z"/></svg>
+      <b>盲区诊断</b><span>每型 64 题，专攻你的短板与内耗之处</span>
+    </div>
+    <div class="feat">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M4 18c3-1.5 5-1.5 8 0s5 1.5 8 0V5c-3 1.5-5 1.5-8 0S6 3.5 4 5v13z" stroke-linejoin="round"/><path d="M4 5v13" stroke-linecap="round"/></svg>
+      <b>64 封深信</b><span>4 个阶位 × 16 型，为当下的你写透写暖</span>
+    </div>
+    <div class="feat">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 21s-7-4.6-7-10a7 7 0 1114 0c0 5.4-7 10-7 10z"/><circle cx="12" cy="11" r="2.4"/></svg>
+      <b>情绪陪伴</b><span>不评判、不指责，只把你说不出口的讲给你听</span>
+    </div>
+    <div class="feat">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M8 3h8M10 3v6l-4.5 5.5A2 2 0 007 17h10a2 2 0 001.5-3.5L14 9V3" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21h6" stroke-linecap="round"/></svg>
+      <b>专属档案</b><span>档案编号 + 建档日期，生成可晒的人格档案卡</span>
+    </div>
+  </div>
+  <button class="btn" data-go="#license">开启深度探索</button>
+  <div class="rule"></div>
+  <p class="quote">「你不是有问题，你只是还没遇见那个能读懂你暗面的人。这一次，让我来做那个人。」</p>
+  <div class="note">测试约需 8–10 分钟 · 请凭授权码进入 · 结果仅存于本设备</div>
+</section>
+
+<!-- ===================== 视图：授权码 ===================== -->
+<section id="view-license" class="view">
+  <div class="brand"><div class="word" style="font-size:15px">人格深处 · 授权入口</div></div>
+  <h1 class="title" style="font-size:24px">持有授权码，<br>方能开启这段旅程</h1>
+  <p class="sub">本测试为授权制使用，一个授权码可绑定本设备，绑定后无需重复输入。</p>
+  <div class="card">
+    <div class="field">
+      <label>授权码</label>
+      <input class="input" id="licenseInput" placeholder="输入授权码" autocomplete="off" spellcheck="false">
+    </div>
+    <button class="btn" id="licenseBtn">验证并绑定本设备</button>
+    <div class="hint" id="licenseMsg"></div>
+  </div>
+  <button class="btn ghost small" data-go="#intro">返回</button>
+  <div class="note">设备绑定：首次验证成功后，本机会记住你的授权身份，换设备需重新验证。</div>
+</section>
+
+<!-- ===================== 视图：类型 ===================== -->
+<section id="view-type" class="view">
+  <div class="brand"><div class="word" style="font-size:15px">人格深处 · 第二步</div></div>
+  <h1 class="title" style="font-size:24px">先确认你的类型</h1>
+  <p class="sub">两种方式：不确定自己类型，先做 8 题速测；已经知道，直接选定。</p>
+  <div class="seg">
+    <button id="modeQuick">我还不确定 · 8题速测</button>
+    <button id="modePick">我知道我的类型</button>
+  </div>
+  <div id="quickBox" style="display:none">
+    <div class="card">
+      <div class="q-count" id="quickCount">第 1 / 8 题</div>
+      <div class="q-text" id="quickText" style="margin-top:14px"></div>
+      <div class="scale" style="grid-template-columns:repeat(2,1fr)">
+        <button id="quickA"></button><button id="quickB"></button>
+      </div>
+    </div>
+  </div>
+  <div id="pickBox" style="display:none">
+    <div class="type-grid" id="typeGrid"></div>
+    <div class="q-brief" id="pickBrief"></div>
+    <button class="btn" id="typeStart" disabled>带着我的类型，开始 64 题</button>
+  </div>
+  <button class="btn ghost small" data-go="#license">返回</button>
+</section>
+
+<!-- ===================== 视图：答题 ===================== -->
+<section id="view-quiz" class="view">
+  <div class="quiz-head">
+    <div class="q-dim" id="quizDim"></div>
+    <div class="q-count" id="quizCount"></div>
+  </div>
+  <div class="bar"><i id="quizBar"></i></div>
+  <div class="q-card">
+    <div class="q-text" id="quizText"></div>
+    <div class="scale" id="quizScale"></div>
+    <div class="scale-lab"><span>完全不像我</span><span>有点像我</span><span>这就是我</span></div>
+  </div>
+  <div class="sel-sum" id="quizSum"></div>
+  <div class="q-nav">
+    <button class="btn ghost" id="quizPrev" style="max-width:none">上一题</button>
+    <button class="btn" id="quizNext" style="max-width:none">下一题</button>
+  </div>
+  <div class="note" style="margin-top:16px">本页已开启离开提醒，中途退出会丢失进度</div>
+</section>
+
+<!-- ===================== 视图：结果 ===================== -->
+<section id="view-result" class="view">
+  <div class="result-head">
+    <div class="kicker" style="margin-top:10px">YOUR DEEP REPORT</div>
+    <div class="arch">
+      <div class="code" id="resCode">----</div>
+      <div class="meta" id="resTypeMeta"></div>
+    </div>
+    <div class="stage-badge stage-1" id="resStage">阶位</div>
+    <div class="report-title" id="resTitle"></div>
+    <div class="report-lead" id="resLead"></div>
+  </div>
+  <div class="card">
+    <div class="rp" id="resBody"></div>
+  </div>
+  <div class="card">
+    <div class="q-dim" style="margin-bottom:16px">八维盲区扫描</div>
+    <div class="dim-bars" id="resDims"></div>
+    <div class="dim-tag">数值越高，代表该盲区越是当下内耗的来源</div>
+  </div>
+  <div class="card">
+    <div class="gold" id="resQuote"></div>
+    <div class="advice" id="resAdvice"></div>
+  </div>
+  <div class="card">
+    <div class="q-dim" style="margin-bottom:12px">我的高阶人格档案</div>
+    <div class="canvas-wrap">
+      <canvas id="cardCanvas" width="900" height="1320"></canvas>
+      <div class="save-tip">长按图片可保存 / 截图分享，或在下方直接下载</div>
+    </div>
+    <button class="btn small" id="cardDownload">下载档案卡</button>
+  </div>
+  <div style="display:flex;gap:12px">
+    <button class="btn ghost small" id="btnRetest" style="max-width:none">再测一次</button>
+    <button class="btn small" id="btnHome" style="max-width:none">返回首页</button>
+  </div>
+  <div class="foot">MBTI 高阶版 · 人格深处<br>结果仅用于自我探索，不作为任何专业诊断依据</div>
+</section>
+
+</main>
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ================================================================
+   配置区（可自行修改）
+================================================================ */
+var LICENSE_CONFIG = {
+  keys: ["MBTI-DEEP-2026", "30879401"],   // 授权码列表：由你（授权者）生成后填入此处分发；可为 8 位随机数字，如 "48102793"
+  maxDevicesPerKey: 3,        // 每个授权码最多可绑定的设备数
+  brand: "人格深处 · MBTI 高阶版"
+};
+var STAGES = [
+  {n:"混沌之茧", c:"stage-1", t:"你的光还被茧裹着，但你已经走到了这里——这本身就是觉醒的开始。", lo:76, hi:100},
+  {n:"觉醒之芽", c:"stage-2", t:"你开始看见盲区，在与它的拉扯里，新的力量正在发芽。", lo:51, hi:75},
+  {n:"整合之光", c:"stage-3", t:"短板正在被驯化，你越来越完整，也越来越像你自己。", lo:26, hi:50},
+  {n:"圆融之境", c:"stage-4", t:"你已把曾经的弱点酿成温柔的力量，抵达人格的高处。", lo:0, hi:25}
+];
+
+/* ================================================================
+   题库与报告数据（16 型 × 64 题 / 16 型 × 4 阶位报告）
+================================================================ */
+var TYPE_DIMS = {};
+var TYPE_REPORTS = {};
+TYPE_DIMS["INTJ"] = {tag:"清醒的筑梦者，孤独的战略家", dims:[
+{n:"情感失语", q:["朋友难过时，你下意识先分析原因，而不是先安慰","你几乎说不出「我想你」「心疼你」这类柔软的话","被误解时你选择沉默，觉得解释是浪费时间","别人倾诉情绪，你心里却在拆解问题本身","你记得住项目参数，却常忘记重要的纪念日","夸奖别人让你别扭，指出问题却张口就来","你安慰人的方式是帮对方列解决方案","爱人落泪时，你第一反应是手足无措想逃离"]},
+{n:"完美拖延", q:["一件事没想清楚全貌，你就迟迟不肯动手","你的草稿永远停在八成，等一个「完美的时机」","你花大量时间规划，真正执行的时间却很少","发布前你反复推翻重来，因为「还能更好」","你宁可错过截止，也不愿交出不满意的作品","你的灵感很多，但大多停留在脑内蓝图","别人已经做完，你还在纠结开头的方式","你总说「等我准备好了」，却很少真正准备好"]},
+{n:"计划洁癖", q:["计划被打乱时，你会烦躁得无法专注","临时插入的事，会让你一整天都不舒服","你对「没有章法」的协作方式感到窒息","旅行攻略必须精确到小时，否则心慌","别人迟到五分钟，你已经在心里扣分","你很难享受「什么都没安排」的松弛","变化来临时，你先感到的是失控而不是机会","你希望所有事按剧本走，但人生从不给剧本"]},
+{n:"刚愎自用", q:["你觉得大多数人的意见不如你的判断","被反驳时，你第一反应是找对方逻辑漏洞","你很难真正采纳「不如你聪明」的人的建议","你已经决定了的事，很难被说服改变","你听别人说话时，常常已经在准备反驳","你相信自己的体系，哪怕它让你撞过南墙","你讨厌被「外行」指挥，哪怕对方是领导","你很少主动认错，即使心里知道自己偏了"]},
+{n:"社交断电", q:["长时间社交后，你需要独处好几天才能恢复","你很少主动联系朋友，觉得「没必要客套」","你在人群里感到抽离，像隔着一层玻璃","别人热络寒暄时，你只想快点结束对话","你几乎没有「闲聊」的能力，开口就是正事","你习惯了独来独往，也习惯了没人真正了解你","关系需要维护这件事，让你觉得疲惫","你偶尔想要陪伴，却不知如何开口邀请"]},
+{n:"过度理性", q:["你习惯压抑情绪，觉得「想清楚就好了」","情绪上头时，你第一反应是批判自己不够理性","你把脆弱视为缺陷，从不在人前流露","你很难允许自己「没理由地难过」","你分析自己的情绪，却很少真正感受它","别人关心你时，你回一句「没事，我能处理」","你连崩溃都要挑一个「方便的时间」","你的内心戏很多，但表面永远风平浪静"]},
+{n:"身心失联", q:["你熬夜赶进度，觉得休息是浪费时间","头痛、胃痛出现时，你选择硬扛","你长期忽略身体信号，直到它抗议到停摆","你觉得「效率优先」，吃饭睡觉都可以让位","你坐下来工作，一坐就是几个小时不动","你很少运动，觉得那是低效的活动","你的身体已经发出警告，你还在赶下一个节点","你把自己的能量当成无限额度在透支"]},
+{n:"高处孤独", q:["你习惯一个人扛所有决定，从不示弱","别人眼中的你无坚不摧，只有你知道夜深时的累","你很难开口求助，觉得开口就输了","你把所有压力调成静音，独自消化","你害怕暴露软肋，怕被看轻","你身边围绕很多人，却没有一个能接住你的人","你太早学会了独立，忘了可以依赖","你赢了很多场仗，却没人问你累不累"]}
+]};
+TYPE_DIMS["INTP"] = {tag:"在脑内宇宙漫游的探索者", dims:[
+{n:"半途而废", q:["兴趣来得快也去得快，项目大多停在四成","你学会了很多东西的开头，却很少走到精通","一旦理解了核心逻辑，你就失去了继续的动力","你的收藏夹里躺满了「以后再学」的资料","你擅长开始，却很难忍受重复和打磨","别人问起你的特长，你一时竟说不出来","你总在换方向，因为每个方向都很快变得「没意思」","你的天赋是发散，代价是很少深耕到结果"]},
+{n:"过度分析", q:["做决定前，你习惯把每个选项翻来覆去分析","别人已经行动了，你还在比较方案的优劣","你思考得越深，越难得出一个「可以了」的结论","一个简单选择，你能脑内模拟出无数种可能","你分析完所有路径，最后选择什么都不做","你的大脑停不下来，连睡觉都在运转","你常常「想通了」，却从未真正「动手了」","过度思考是你最熟悉的安全区，也是你的牢笼"]},
+{n:"情感短路", q:["别人向你表达情感，你会愣住不知如何回应","你很难说出「我也很在意你」这类话","你表达关心的方式是分享知识，而不是陪伴","对方需要安慰时，你给的是理论分析","你害怕情感浓度太高的场合，想躲起来","你分不清「对方需要倾听」还是「需要建议」","你收到礼物时手足无措，不知道该怎么表现开心","你的情感表达像一门你不擅长的外语"]},
+{n:"拖延成性", q:["你总在截止日前才爆发式赶工","越重要的事，你越拖到最后才面对","你的一天常在「再刷五分钟」中悄悄溜走","你计划得很好，执行却总被「启动困难」卡住","你习惯用「我在思考」来掩盖「我还没开始」","时间越紧你越焦虑，越焦虑你越拖延","你常常踩着点交差，然后发誓下次一定提前","你拖延的不是事情，是面对不确定的恐惧"]},
+{n:"现实脱节", q:["你沉浸在脑内世界，常常忘记吃饭喝水","账单、家务这类琐事，让你觉得烦躁又陌生","你总在「想未来」，却处理不好当下的小事","你的生活技能停留在「能用就行」","你常因忘回消息、忘带钥匙而麻烦不断","你对现实规则的细节缺乏耐心","你活在概念里，却对「当下」的存在感很模糊","现实生活对你来说，像一段需要加载的进度条"]},
+{n:"社交回避", q:["维护关系需要主动联系，而这让你感到吃力","你很少主动发消息，总觉得「没必要」","聚会时你常走神，思考一些无关的问题","你宁可在家研究一个冷门问题，也不愿社交","朋友约你，你常找理由推掉","你觉得自己不需要那么多关系","你对「尬聊」零容忍，宁愿沉默","你偶尔感到孤独，却不知道如何联结他人"]},
+{n:"自我怀疑", q:["你脑内有个严厉的审判官，随时批评你的不足","你总觉得自己「还不够懂」，所以不敢输出","别人夸奖你，你第一反应是「ta 不了解我」","你对自己的标准高到几乎没人能达标","你常拿自己的短板，和别人最亮的长处比较","你做完一件事，第一反应是找自己哪里不够好","你的自信是间歇性的，常被一次挫折清零","你内心深处，其实很怕自己「其实平庸」"]},
+{n:"想法囤积", q:["你的脑子里装满了伟大的想法，却很少落地","你享受「想到一个好点子」的瞬间，就够了","你的笔记里躺着几十个未完成的项目","你总说「这个可以做」，但从未真正去做","你把想法当作品，而不是把成品当作品","你害怕自己的创意被实现后「不过如此」","你习惯了拥有无数可能，而非一个现实","你的宇宙很广阔，却很少有一艘船真正启航"]}
+]};
+TYPE_DIMS["ENTJ"] = {tag:"天生的统帅，也是自己的暴君", dims:[
+{n:"唯结果论", q:["你只在意结果，过程里的感受被你忽略","你做任何事都先问「这有什么用」","你很难欣赏「无意义」的美好","别人沉浸在当下时，你已经在盘算下一步","你的效率是别人的压力来源","你眼里只有目标，容易踩到身边人的情绪","你把「休息」视为可压缩的成本","你的世界非黑即白：有用，或者没用"]},
+{n:"急躁专制", q:["别人跟不上你的节奏时，你会不耐烦","你习惯直接下令，而不是商量","你觉得自己「明明是对的」，所以没必要解释","你把「强势」当效率，把「倾听」当拖延","别人提出异议，你第一反应是压下去","你说话太快太满，常让人没有插嘴的余地","你很难慢下来，等一个跟不上的人","你赢了道理，却常常输了人心"]},
+{n:"停不下来", q:["你几乎无法真正放松，闲下来就焦虑","你的假期也排满行程，比上班还累","你对自己说「再撑一下」，一撑就是好几年","你生病了也不肯停，怕掉队","你把价值等同于产出，闲下来就觉得自己没用","你的身体在透支，你的野心还在加码","你从没体验过「什么都不做」的安心","你活得像一台永动机，却忘了自己会磨损"]},
+{n:"情感指挥所", q:["你把关心表达成「你应该这样做」","伴侣的委屈，被你回应成「别矫情，解决它」","你很少说「对不起」，觉得认错伤威严","你爱一个人的方式，是替ta安排人生","你很难承认自己也需要被照顾","你给得出资源，却给不出柔软","家人说你不近人情，你认为是他们不懂你","你的温柔都藏在「为你好」的强势里"]},
+{n:"完美强迫", q:["你对「不达标」零容忍，包括对自己","一个小失误，你能自我批判一整天","你要求周围的一切都在掌控中","你很难接受「差不多就行」","你把自己逼得很紧，却不允许自己喊累","你的标准是移动的终点线，永远差一步","你为「还不够好」焦虑，哪怕已经很好","你从没真正夸过自己一次"]},
+{n:"关系损耗", q:["你习惯用「有用没用」衡量关系","你不能忍受「无效社交」，哪怕对方在意你","你说话直，常无意中伤到亲近的人","你赢了争论，却失去了一个朋友","你把同事当对手，把朋友当资源","你很少主动经营「没有价值」的温情","你的强势让人不敢靠近你真实的脆弱","你身边的掌声很多，真心很少"]},
+{n:"失控恐惧", q:["任何「失控」都会让你极度不安","你无法忍受「不知道接下来怎么办」","你连旅行都要计划到备份方案","意外发生时，你先责备自己「没算到」","你害怕承认「我也不知道」","你把自己绷成一张弓，因为怕松懈就输","你对「不确定性」的容忍度极低","你控制得越多，越发现控制不住的越多"]},
+{n:"高处之寒", q:["你习惯当那个「撑场面」的人，从不敢垮","你背负所有人的期待，却没人问你撑不撑得住","你示弱过一次，之后加倍后悔","你把压力当勋章，把崩溃当耻辱","你身边都是需要你的人，没有能接住你的人","你赢了世界，却常觉得世界与你无关","你很少被真正看见「累」的那一面","你站在高处很久了，忘了地上也有温度"]}
+]};
+TYPE_DIMS["ENTP"] = {tag:"永不停歇的点火人，也在寻找能点燃自己的人", dims:[
+{n:"三分钟热度", q:["你兴趣广泛，但极少坚持到底","新项目让你兴奋三天，之后就想换赛道","你的热情来得快去得也快","你已经开了很多头，却很少收尾","你总在追求「下一个更有趣」的东西","你害怕无聊，而坚持往往意味着重复","你的过往写满了「浅尝辄止」","你羡慕那些深耕的人，却管不住自己的心"]},
+{n:"争辩成瘾", q:["你享受辩论本身，哪怕观点你自己也不信","你常为了「赢」而争，忘了「理」在哪","你忍不住反驳，哪怕对方只是随口一说","你说话带刺，自己却不觉得","你把人逼到墙角，只为了证明你反应快","你赢了每一场嘴仗，却输掉了关系","你很难说出「你说得对」","你的聪明，常变成伤人的武器"]},
+{n:"承诺恐惧", q:["你害怕「确定下来」的感觉","长期关系让你本能地想逃","你总在心动之后，怀疑自己是不是选错了","你把「自由」看得比什么都重","你很难真正「定下来」，无论是事还是人","你答应得太快，兑现得太少","你回避「非你不可」的承诺","你享受无限可能，却害怕唯一答案"]},
+{n:"现实感缺失", q:["你擅长画饼，却常忘记落地","你的计划宏伟，执行却总虎头蛇尾","你低估了「坚持」和「细节」的重量","你总在改方向，因为「有个更好的想法」","你的提案惊艳所有人，却常常止于提案","你忽略了那些「无聊但必要」的事","你活在可能性里，对现实缺乏耐心","你造了很多飞机，却没修过一条跑道"]},
+{n:"情感轻浮", q:["你用玩笑化解所有沉重","别人认真倾诉时，你忍不住抖机灵","你很少表露真心，因为怕被看轻","你习惯了「什么都无所谓」的人设","你拿幽默当盾牌，挡开所有深度","你很难说出一句「我很认真」","你怕深情，因为它意味着责任","你让所有人都喜欢你，却没人真正走进你"]},
+{n:"内在空洞", q:["你热闹了所有场合，却独处时感到空虚","你停不下来，因为一停就要面对自己","你收集很多「刺激」，却很少感到满足","你很难安静地待着，不找任何事做","你用忙碌和喧闹，掩盖内心的不确定","你对外人慷慨，对自己苛刻","你怕「无趣」，更怕「无意义的自己」","你不断点火，却很少让火焰温暖自己"]},
+{n:"规则反感", q:["你本能地抗拒任何规则和流程","别人按部就班时，你想打破重来","你讨厌被约束，哪怕规则对你有益","你常因「不服从」付出代价","你觉得「传统」就是用来挑战的","你很难坚持一种固定的生活方式","你把「叛逆」当成身份的一部分","你反抗一切，却未必清楚自己要什么"]},
+{n:"孤军奋战", q:["你习惯一个人扛，觉得解释太累","你嘴上说「无所谓」，心里其实在乎","你从不主动求助，哪怕已经走投无路","你把脆弱藏得很深，怕人看见","你觉得「需要别人」是种失败","你身边很多人，却很少人懂你","你总在照顾别人的情绪，却没人照顾你的","你笑着说「没事」，心里早已一片狼藉"]}
+]};
+TYPE_DIMS["INFJ"] = {tag:"最懂人心的理想主义者，却最不会善待自己", dims:[
+{n:"过度共情", q:["你能感受到别人的情绪，像感受自己的","朋友难过，你比ta还难过，且持续更久","你总在照顾别人的情绪，把自己放最后","你在人群中容易「情绪过载」","你为别人的事操碎了心，自己的事却搁着","你很难对「别人的痛苦」说不","你的能量常常被「倾听」耗尽","你救了很多溺水的人，自己却快沉了"]},
+{n:"自我牺牲", q:["你习惯了「先人后己」，甚至忘了自己要什么","你总在满足别人，却很少满足自己","你说「没关系」的时候，其实很有关系","你把别人的认可，当成自己的价值","你害怕拒绝，怕伤了关系","你付出很多，却不敢要求回报","你把自己活成了「工具人」，还笑着说愿意","你的委屈都咽在肚子里，没人看见"]},
+{n:"理想主义内耗", q:["现实和理想的落差，让你反复失望","你心里有个「完美世界」，现实总在打折","你对自己要求极高，做不到就自我攻击","你常为「本可以更好」而痛苦","你太清楚「应该怎样」，反而难以接纳「实际怎样」","你的高标准，让身边的人也有压力","你为未来焦虑，因为怕辜负自己的理想","你活得很重，因为心里装着一个完美的自己"]},
+{n:"情绪淤积", q:["你习惯把情绪藏起来，自己消化","你不愿意麻烦别人，哪怕已经很累","你的「我没事」背后，往往藏着一片海","你很少发脾气，但爆发时很吓人","你把委屈攒着，攒到某一天突然决堤","你希望别人懂你，却不给人懂你的线索","你擅长安慰别人，却不擅长安慰自己","你的崩溃都是安静的，常常无人知晓"]},
+{n:"隐形人模式", q:["你太会读空气，常常隐身成全别人","你总在人群里「消失」，让别人做主角","你很少提出自己的需求","你怕打扰别人，哪怕只是想被看见","你习惯了不争不抢，也习惯了不被注意","你的好，常被当成理所当然","你存在感很低，低到自己都忘了自己","你成全了所有人，唯独漏了自己"]},
+{n:"过度负责", q:["你总觉得自己要为「大局」负责","别人的情绪不好，你会归咎于自己","你不敢放手，怕别人搞砸","你为每个选择都想过「最坏的结果」","你背负着不该你背负的重量","你很难「不管」，即使那不是你的事","你的责任感受到了「病态」的程度","你常常替别人的人生操心，忘了过自己的"]},
+{n:"独处成瘾", q:["你享受独处，但也用独处逃避关系","你需要很长时间恢复，才能再见人","你很难向人敞开内心，怕被误解","你的深度关系很少，但每一段都很重","你宁可一个人消化，也不愿找人分担","你把「不需要别人」当成了骄傲","你渴望被懂，却总在懂之前就退开","你的孤独，是你自己选的，也是你放不下的"]},
+{n:"完美主义拖延", q:["你太想「一次做好」，反而迟迟不动","你的作品总在打磨，很难宣告完成","你害怕交付不完美的东西","你的创意很多，落地的很少","你对自己「还不够好」的判断，常让你止步","你羡慕别人的「敢」，自己却总在「等」","你的高标准，让你错过了很多「够好」","你心里有个完美的作品，现实中却一片空白"]}
+]};
+TYPE_DIMS["INFP"] = {tag:"内心住着整个宇宙的诗人，却常困在自己的茧里", dims:[
+{n:"内耗成灾", q:["你的内心戏一场接一场，消耗大量能量","你常为「没发生的事」提前焦虑","你反复咀嚼一句话、一个眼神","你的脑海里有两个声音，日夜辩论","你花很多时间「想」，很少时间「做」","你的情绪像天气，变化快到连自己都累","你活在「如果当初」和「万一以后」之间","你被自己的感受困住，动弹不得"]},
+{n:"行动瘫痪", q:["你梦想很多，行动很少","你总在「准备好之前」不敢开始","你的灵感一闪而过，然后就没有然后","你害怕失败，所以干脆不做","你的作品常停在「草稿」状态","你羡慕别人的行动力，自己却总在原地","你把时间花在幻想上，现实却一片空白","你有很多「本可以」，却没有一个「做到了」"]},
+{n:"讨好隐忍", q:["你害怕冲突，宁可委屈自己","别人越界时，你选择忍让而不是表达","你很难说出「我不喜欢」","你为了让气氛和谐，常放弃自己的立场","你的愤怒都攒着，最后变成委屈","你把「不争」当成美德，却也当成牢笼","你太在意别人的看法，常丢了自己","你笑着配合所有人，心里却在滴血"]},
+{n:"理想化他人", q:["你总把别人想得太好，然后失望","你在关系里滤镜很重，看不清真相","你把一个人「神化」，又因ta「不完美」而受伤","你爱的是想象中的ta，不是真实的ta","你的期待太高，落空时伤得很重","你反复经历「心动、美化、幻灭」的循环","你很难接受「人本来就有瑕疵」","你失望的次数多了，开始不敢再期待"]},
+{n:"情感洪水", q:["你的感受太深，有时淹没了判断","一部电影、一首歌，能让你难过好几天","你容易被情绪裹挟，做出后悔的决定","你很难「抽离」看待事情","你的喜怒哀乐都太浓烈，自己都怕","你常常「感觉太多」，却说不清为什么","你在深夜被情绪淹没，白天又装作没事","你的眼泪来得突然，自己也控制不了"]},
+{n:"价值游离", q:["你常怀疑「我做的事有意义吗」","你找不到「非做不可」的理由","你的热情时有时无，像潮汐","你常觉得自己「没有方向」","你羡慕别人目标明确，自己却在徘徊","你的自我认同，常随外界评价波动","你怕自己「平凡」，又不知如何不凡","你渴望意义，却常被困在无意义感里"]},
+{n:"边界模糊", q:["你很难分清「我的事」和「别人的事」","别人一个脸色，能影响你一整天","你常为别人的情绪买单","你很难对亲近的人设限","你把自己活成了「别人的延伸」","你的自我，常融化在关系里","你不知道哪里是「别人」，哪里是「你」","你总在迁就，直到忘了自己的形状"]},
+{n:"回避现实", q:["你宁可沉浸在想象里，也不愿面对现实","现实中的琐事让你厌烦又无力","你常幻想「另一种人生」来逃避当下","你对「钱、账、计划」这些事本能逃避","你的时间常花在「想」而非「做」","你把「远方」当成救赎，却错过「此刻」","你活在可能性里，因为那里安全","现实太硬，你的壳太软"]}
+]};
+TYPE_DIMS["ENFJ"] = {tag:"人群里的太阳，却常常忘记自己也需要光合作用", dims:[
+{n:"过度付出", q:["你习惯照顾所有人，却很少被人照顾","你总在「别人需要你」里找到存在感","你很难拒绝别人的求助","你把别人的事当自己的事，累到透支","你付出时不求回报，却偷偷期待被看见","你的能量总在给别人，忘了留给自己","你忙完所有人的事，才发现自己的事还搁着","你把自己掏空了，还笑着问「还有谁需要我」"]},
+{n:"讨好失我", q:["你太在意别人怎么看你","你为了被喜欢，常隐藏真实的自己","你害怕被讨厌，所以什么都说「好」","你的「人设」很完美，但那是面具","你不断调整自己，去适配别人的期待","你很少说「我不愿意」","你把「被需要」误当成「被爱」","你活成了别人喜欢的样子，却忘了自己喜欢什么"]},
+{n:"情绪透支", q:["你共情太深，别人的情绪会留在你身上很久","你承接了太多人的负面情绪","你安慰完所有人，自己却没人安慰","你的「我没事」说得最多，也最没人信","你白天光芒万丈，深夜独自消化","你的情绪垃圾桶满了，却还在接","你总在「撑」，撑到某个深夜突然崩溃","你照顾了所有人的心情，却照顾不了自己的"]},
+{n:"拯救者情结", q:["你总想「拯救」身边过得不好的人","你为别人的课题操碎了心","你很难放手让别人自己成长","你把「被需要」当成价值感的来源","你总在替别人的人生「兜底」","你关心别人超过关心自己","你分不清「帮助」和「过度干涉」","你把自己活成了别人的拐杖，忘了自己也要走路"]},
+{n:"害怕冲突", q:["你宁可委屈自己，也不愿让气氛变僵","你心里有意见，嘴上却说「都行」","你为了和谐，常吞下自己的真实想法","你害怕直面矛盾，总在拖延沟通","你的不满都攒着，最后变成失望","你怕伤人，却常常伤到自己","你宁愿自己消化委屈，也不愿让对方不舒服","你的「好脾气」，是憋出来的内伤"]},
+{n:"忽视自我", q:["你很少问自己「我想要什么」","你的计划里都是别人，没有自己","你把自己的梦想排在所有人的需求后面","你很久没有为自己做一件事了","你习惯用「大家开心就好」来回避自己","你对自己的感受很迟钝","你把「无私」当美德，却把「自己」弄丢了","你照顾了全世界，唯独漏了那个最需要照顾的你"]},
+{n:"完美主义压力", q:["你对自己「必须做好」的要求极高","你害怕让任何人失望","你把「不完美」视为失败","你总在复盘自己哪里做得不够","你肩上的期待很多，包括你给自己的","你很难接受「有人不喜欢我」","你的自信，常建立在「表现好」上","你活得很用力，因为怕辜负所有人"]},
+{n:"关系失衡", q:["你付出十分，却很难接受别人的一分","别人对你好，你手足无措想加倍还","你很难真正「依赖」一个人","你在关系里总在「给」，很少「要」","你习惯照顾人，忘了自己也可以被照顾","你把「被照顾」当成负担","你的关系里，你永远是付出更多的那方","你给了所有人伞，自己淋着雨"]}
+]};
+TYPE_DIMS["ENFP"] = {tag:"永远热泪盈眶的梦想家，却常被现实绊倒", dims:[
+{n:"三分钟热情", q:["你热情来得快，消退得也快","你开了很多头，却很少走到结尾","你总在「下一个更好」里切换","你的热爱很多，深耕很少","你害怕「坚持」的重复和无聊","你的计划常停留在「想想就开心」","你羡慕别人的成果，却不愿走别人的路","你的潜力很大，兑现的却很少"]},
+{n:"回避现实", q:["你讨厌「琐碎」和「细节」，能拖就拖","你的账单、行程、计划总是一团乱","你活在「可能性」里，对「当下」缺乏耐心","你把「自由」当借口，逃避责任","你总在幻想「另一种活法」","你很难面对「现实就是如此」","你的浪漫，常以「烂摊子」收场","你逃避的那些事，最后都回来找你"]},
+{n:"情绪波动", q:["你的心情像过山车，起伏很大","你上一秒热情高涨，下一秒陷入低落","你的感受来得太快，常来不及分辨","你容易被一句话影响一整天","你的情绪化，让身边的人有点累","你常冲动做决定，然后后悔","你的「快乐人设」背后，藏着很多不安","你连自己都摸不透自己的心情"]},
+{n:"过度乐观", q:["你总把事情想得太好，低估难度","你答应得很爽快，兑现却常打折扣","你总说「没问题」，其实问题很多","你的乐观让你忽略了风险","你很少做「最坏打算」","你把「以后再说」当万能解药","你的信心来自想象，而非准备","现实打脸时，你比谁都懵"]},
+{n:"寻求认可", q:["你太需要被喜欢、被认可","没人回应时，你会反复怀疑自己","你的快乐，常建立在别人的反馈上","你很难接受「有人不喜欢我」","你总在「表演热情」，怕冷场","你发完消息没人回，会焦虑一整天","你把「被看见」看得太重","你活成了「大家想要的样子」，忘了自己"]},
+{n:"选择困难", q:["你看到太多可能性，反而难以选择","你总在纠结「选A还是B」","你怕选错，所以迟迟不定","你的「都可以」背后，是害怕承担","你换工作的理由常是「不适合」","你难以坚持一个方向，因为总想着其他路","你的生活常卡在「选择」这一关","你羡慕那些「认准一条路」的人"]},
+{n:"逃避冲突", q:["你害怕正面冲突，宁可绕开","你的不满常藏在玩笑里","你很难直接说出「我生气了」","你为维持和谐，常放弃立场","你把「算了吧」挂在嘴边","你怕关系破裂，所以从不摊牌","你的委屈常以「突然爆发」收场","你回避的那些矛盾，从没真正消失"]},
+{n:"内在不安", q:["你看起来很快乐，内心却常感空洞","你停不下来，怕一停就面对焦虑","你的「热闹」常是逃避「安静」","你怕「错过」，所以什么都想抓","你很难享受「此刻」，总在期待「下一站」","你的自信像潮水，涨得快退得也快","你独处时，常感到一种说不出的空","你在找的东西，其实一直没找到"]}
+]};
+TYPE_DIMS["ISTJ"] = {tag:"可靠到让人忘记你也会累的守夜人", dims:[
+{n:"情感压抑", q:["你习惯把情绪藏起来，因为「没意义」","你很难说出「我难过」「我需要你」","你的关心都藏在行动里，从不说出口","别人以为你冷，其实你只是不会表达","你生气时也沉默，让对方无从下手","你把脆弱藏得太深，连自己都找不到","你的爱很实在，却很少被感受到","你心里翻江倒海，脸上纹丝不动"]},
+{n:"过度负责", q:["你总觉得自己要「兜底」，所以从不敢松","你把所有人的事都放在心上","你很难把任务交给别人，怕搞砸","你的休息时间常被「责任」占满","你答应的事，拼了命也要做到","你习惯扛，却忘了自己也会累","你的靠谱，成了别人依赖你的理由","你为别人兜了太多底，自己却没人兜"]},
+{n:"固执守旧", q:["你相信「以前怎么做的就怎么做」","你抗拒改变，哪怕改变是好的","你的「老办法」让你错过很多新机会","你很难接受和自己认知不同的观点","你认定的事，九头牛也拉不回来","你习惯熟悉的环境，害怕未知","你的稳定，有时变成了停滞","你守着旧地图，找不到新大陆"]},
+{n:"过度批判", q:["你对自己很苛刻，犯点错就自责","你常想起过去的失误，反复懊悔","你总盯着「哪里没做好」，看不见「哪里做好了」","你的标准很高，连自己都很难达到","你很少夸自己，哪怕做得很好","你习惯挑毛病，包括挑自己的","你的内心住着一个严厉的教官","你活得很累，因为总在「纠错」"]},
+{n:"表达障碍", q:["你心里有感情，却说不出口","你爱一个人，方式是「默默做好一切」","你很少主动说「想你」「爱你」","你的关心常被误解成「管太多」","你发信息都是「正事」，很少「废话」","你怕说错话，所以干脆不说","你的温柔都藏在「做了没说」里","你被误会时，也不愿解释"]},
+{n:"身心透支", q:["你把「咬牙坚持」当美德","你身体不舒服时，先想到「忍忍就过去」","你很少请假，哪怕已经很累","你的休息常被「还有事要做」打断","你把累咽下去，因为「大家都这样」","你的身体已经抗议，你还在硬撑","你从不喊累，直到累垮","你照顾了所有人，却没人照顾你"]},
+{n:"社交疏离", q:["你不擅长寒暄，觉得没意义","你很少主动约人，怕打扰","你的朋友不多，但都很久没联系","你在人群里话少，存在感低","你觉得「没必要」维系关系","你习惯了独来独往，也习惯了孤独","别人热络时，你在一旁不知如何融入","你偶尔想要人陪，却不知如何开口"]},
+{n:"自我忽视", q:["你把自己的需求排在所有人后面","你买东西先看「实不实用」，不看喜不喜欢","你很久没为自己「浪费」过时间","你总在满足别人，却忽略自己","你把「将就」过成了习惯","你忘了自己喜欢什么、想要什么","你的生活很规律，却没什么期待","你把自己活成了「别人的依靠」，忘了自己"]}
+]};
+TYPE_DIMS["ISFJ"] = {tag:"最温暖的守护者，却总忘了守护自己", dims:[
+{n:"过度付出", q:["你习惯照顾所有人的生活起居","你的好，常被当成理所当然","你总在「被需要」里找到安心","你为家人朋友操碎了心，自己却将就","你很难拒绝，怕对方失望","你的付出像水，流走了却没人记得","你把「贤惠」「可靠」活成了枷锁","你照顾了所有人，却没人照顾你"]},
+{n:"讨好委屈", q:["你害怕冲突，宁可自己受委屈","你的「没关系」背后，藏着很多「有关系」","你很少表达自己的不满","你为了别人开心，常委屈自己","你的情绪都自己消化，从不外露","你怕「添麻烦」，所以什么都自己扛","你把「忍」当美德，把「说」当任性","你的委屈攒久了，变成了一种「习惯性心酸」"]},
+{n:"自我贬低", q:["你总觉得自己「还不够好」","别人夸你，你第一反应是不敢信","你习惯先看到自己的不足","你总拿自己和别人比，然后觉得自己差","你不敢争取，因为「怕自己不配」","你把「低调」活成了「隐藏」","你总在肯定别人，却从没肯定过自己","你其实很好，但你不知道"]},
+{n:"过度担忧", q:["你总为「万一」焦虑","家人晚归，你会脑补各种不好的画面","你习惯做最坏的打算","你的操心，常让身边的人觉得压抑","你很难放松，因为「总有事要担心」","你把「安全」看得太重，错过了很多风景","你的爱，常以「唠叨」和「控制」呈现","你担心了所有人，唯独不担心自己累不累"]},
+{n:"忽视自我", q:["你很少为自己花钱、花时间","你的需求，永远排在家人朋友后面","你把自己的喜好藏起来，迁就别人","你很久没有「为自己」做一件事了","你的人生清单里，都是别人的事","你把「我没事」说得太顺口","你忘了自己也有梦想","你把自己活成了「背景板」"]},
+{n:"情绪压抑", q:["你很少在人前流露真实情绪","你难过时，会自己躲起来哭","你怕别人担心，所以报喜不报忧","你的委屈都憋着，憋到身体出问题","你从不发脾气，但偶尔会「突然崩溃」","你把「坚强」当成唯一选项","你的情绪垃圾桶，从来没有清空过","你照顾了所有人的情绪，却没人照顾你的"]},
+{n:"难以求助", q:["你宁可自己硬撑，也不愿开口求助","你觉得「麻烦别人」是件丢脸的事","你总说「我自己可以」","你帮了所有人，却从不让别人帮你","你怕欠人情，所以什么都自己扛","你的独立，有时是一种逞强","你累到极点，也说「没事」","你把自己活成了一座孤岛"]},
+{n:"改变恐惧", q:["你害怕改变，熟悉让你安心","你宁可忍受现状，也不愿冒险","你总说「算了，就这样吧」","你的「稳定」，有时是「不敢动」","你羡慕别人敢闯，自己却停在原地","你为「如果失败了怎么办」焦虑","你把「安全」当成了「幸福」","你错过了很多可能，因为你不敢开始"]}
+]};
+TYPE_DIMS["ESTJ"] = {tag:"秩序的守护者，却常把世界活成一场考核", dims:[
+{n:"控制欲强", q:["你希望一切按你的规矩来","别人不按流程走，你会很不舒服","你习惯「指挥」，而不是「商量」","你很难放手让别人自己决定","你觉得「听我的」才是对的","你的掌控，常让人喘不过气","你管得太宽，连别人的私事都要操心","你越控制，越发现失控的更多"]},
+{n:"情感粗糙", q:["你表达关心，总是「说教」而不是「倾听」","你很少说「我爱你」「辛苦了」","你把「为你好」说得理直气壮","别人的感受，常被你当成「矫情」","你安慰人的方式是「讲道理」","你很难接住别人的情绪","你的爱很实在，却很伤人","你赢了道理，却常常输掉感情"]},
+{n:"过度评判", q:["你习惯用「对错」评判一切","你总在挑毛病，包括挑自己的","你觉得「做不到」就是「不够努力」","你的标准很硬，很少变通","你很难欣赏「和你不一样」的人","你的批评多于鼓励","你对自己苛刻，对别人更苛刻","你把人活成了「待考核的项目」"]},
+{n:"停不下来", q:["你把「忙碌」当成价值","你休息时会有罪恶感","你的行程排得满满当当","你生病了也不肯停","你觉得「闲下来」就是「没出息」","你的身体在透支，你的日程还在加码","你从没认真问过自己「累不累」","你活得像一台机器，忘了自己会坏"]},
+{n:"固执己见", q:["你认定的事，很难被改变","你觉得「老办法」最稳妥","你抗拒新事物，因为「没必要」","你很难承认自己错了","你听不进「和你想的不一样」的意见","你的经验，有时成了你的围墙","你守着的规矩，有些已经过时了","你的「对」，常常挡住了「好」"]},
+{n:"情感隔离", q:["你很少表达脆弱，觉得那是「没用」","你的压力都自己扛，从不倾诉","你觉得「哭」是软弱","你心里难受，也说「没事」","你习惯了「报喜不报忧」","你的情绪，都被你用「忙碌」压住了","你身边的人觉得你「不需要被关心」","你把自己活成了一堵墙"]},
+{n:"关系功利", q:["你习惯用「有没有用」衡量关系","你对「没价值」的人和事缺乏耐心","你的朋友不多，因为「没时间」","你把家庭责任当成「任务」","你陪家人的时候，心还在工作上","你觉得「感情」不如「效率」重要","你身边的人爱你，却常觉得你不爱他们","你赢了事业，却输掉了亲密"]},
+{n:"身心警报", q:["你长期忽略身体发出的警告","你头痛、失眠，都当成「小事」","你的脾气越来越差，因为太累了","你靠咖啡和意志力硬撑","你的身体已经垮过一次，你还在硬扛","你不允许自己「慢下来」","你把「撑过去」当成唯一的答案","你的健康，是你最晚想起的账单"]}
+]};
+TYPE_DIMS["ESFJ"] = {tag:"人群里的粘合剂，却常常忘了粘住自己", dims:[
+{n:"过度在意他人", q:["你太在乎别人的看法","别人一个脸色，你能琢磨一整天","你总在「大家怎么看我」里打转","你发消息没人回，会反复想是不是说错了","你的快乐，常建立在别人的反馈上","你为了被喜欢，常隐藏真实的自己","你把自己活成了「大家想要的样子」","你太累了，因为你活在别人的眼里"]},
+{n:"讨好成瘾", q:["你很难拒绝别人的请求","你总在「帮忙」里找存在感","你的「好」常被当成理所当然","你为了气氛和谐，常委屈自己","你怕被讨厌，所以什么都说「好」","你的付出，常得不到同等的回应","你把「被需要」当成价值","你讨好所有人，却没人讨好你"]},
+{n:"情绪寄生", q:["你的情绪，常被别人的情绪牵着走","别人难过，你比ta还难受","别人冷淡你，你会胡思乱想一整天","你承接了太多「别人的情绪垃圾」","你很难「关掉」对他人感受的雷达","你的心情，常取决于身边人的脸色","你为别人的事焦虑，自己的事却顾不上","你的情绪，从来没有真正属于过你自己"]},
+{n:"忽视自我", q:["你很少问自己「我想要什么」","你的日程里全是「陪别人」","你很久没为自己做过一件事","你把「大家开心」当成自己的目标","你的梦想，早被「别人的期待」覆盖","你照顾所有人，唯独忘了自己","你连「我喜欢什么」都要想很久","你把自己活丢了"]},
+{n:"表面和谐", q:["你害怕冲突，宁可粉饰太平","你心里有意见，嘴上却说「都行」","你为了「面上过得去」，吞下很多委屈","你的不满从不直接说，而是「暗示」","你怕关系破裂，所以从不摊牌","你把「忍」当成维系关系的方式","你的和谐，是建立在你的内伤上的","你从不吵架，却常常冷战"]},
+{n:"过度操心", q:["你总在为别人的事操心","你操心家人、朋友、同事，唯独不操心自己","你的「为你好」常变成「管太多」","你总在提醒、催促、安排","你把别人的课题背在自己身上","你很难「不管」，即使那不是你的事","你的关心，常让人想逃","你操碎了心，却常被嫌「烦」"]},
+{n:"价值依附", q:["你的自我价值，常建立在「被需要」上","没人需要你时，你会恐慌","你怕「没用了」，所以拼命付出","你的安全感，来自「被人依赖」","你很难独处，因为独处时找不到自己","你的「好」，常是为了「被爱」","你把「付出」当成了「存在的证明」","你忘了：你本身，就值得被爱"]},
+{n:"情绪积压", q:["你习惯「报喜不报忧」","你的委屈都自己咽，很少说出口","你看起来开朗，内心却很累","你难过时，还要笑着安慰别人","你的情绪垃圾桶，从没清空过","你从不示弱，因为怕「扫大家的兴」","你的崩溃，都是「躲起来」的崩溃","你装了很久的开心，快装不下去了"]}
+]};
+TYPE_DIMS["ISTP"] = {tag:"冷静的动手派，却常把自己的心拆了装不回去", dims:[
+{n:"情感回避", q:["你习惯用「行动」代替「表达」","你很难说「我在乎你」","别人的情绪，让你不知如何应对","你遇到情感问题，第一反应是「躲」","你宁可修好一台机器，也不愿面对一段关系","你的关心，常被误解成「冷漠」","你心里有感情，却不知怎么拿出来","你把自己活成了「不需要感情」的样子"]},
+{n:"三分钟热度", q:["你精通很多技能，却很少坚持到底","你的兴趣来得快去得快","你学东西快，但很快就腻了","你总在「换新」的路上","你很难忍受「重复」","你的技能很多，精通很少","你的人生像一部换台很快的电视","你害怕「定下来」，无论是事还是人"]},
+{n:"独狼模式", q:["你习惯一个人解决所有问题","你很少求助，觉得「自己能行」","你在团队里话少，存在感低","你不需要别人，也不让别人需要你","你的独立，有时是一种隔离","你从不示弱，哪怕已经撑不住","你把「不依赖」当成骄傲","你是一座孤岛，却以为那是自由"]},
+{n:"逃避承诺", q:["你害怕「被绑定」的感觉","长期关系让你想逃","你总在「差不多该定下来了」时退缩","你享受「随时可以走」的自由","你的承诺，常以「没想好」告终","你回避「非你不可」的约定","你怕「负责」，因为负责意味着失去自由","你让人没有安全感，因为你从不定下来"]},
+{n:"情感失语", q:["你心里波涛汹涌，表面云淡风轻","你几乎不表达爱意","你被误解时，宁可沉默","你的温柔都藏在「帮你修好」里","你很难说出「我需要你」","你连「开心」都表现得很克制","你的伴侣常问你「你到底爱不爱我」","你爱一个人，却让ta感觉不到"]},
+{n:"冲动冒险", q:["你追求刺激，容易忽略风险","你开车、做事都「图快」","你常凭一时兴起做决定","你享受「危险边缘」的感觉","你的「果断」有时是「冲动」","你很少想「后果」","你的冒险，让你付出过代价","你的自由，常以「事故」收场"]},
+{n:"忽视健康", q:["你熬夜、乱吃，觉得「没事」","你的身体小毛病不断，你从不放心上","你运动全凭「兴致」","你受伤了还硬撑","你把「扛」当成习惯","你的身体，是你最忽视的「装备」","你总觉得「还年轻，扛得住」","你的健康，是你最晚偿还的债"]},
+{n:"内心封闭", q:["你很少向人敞开内心","你觉得「说了也没用」","你的压力都自己消化","你习惯了「面无表情」","你很难信任别人","你把「不需要被懂」当成了保护","你身边的人觉得你「神秘」，其实是「孤独」","你关着门，却希望有人敲门"]}
+]};
+TYPE_DIMS["ISFP"] = {tag:"用感官热爱世界的艺术家，却常把自己藏进画里", dims:[
+{n:"回避冲突", q:["你害怕冲突，宁可躲开","你的不满都藏在心里，从不直说","你为了和平，常放弃自己的立场","你宁可「算了」，也不愿「吵了」","你把委屈咽下去，然后默默疏远","你从不正面表达「我生气了」","你的关系，常死于「沉默的失望」","你把「忍」当成了「温柔」"]},
+{n:"自我隐藏", q:["你很少展示真实的自己","你怕被看穿，所以保持「低调」","你的作品比你有名，你比你的作品更隐没","你习惯「观察」，很少「发声」","你把自己的想法藏得很深","你怕「被评价」，所以「不参与」","你存在感很低，低到常被忽略","你有很多话，却从不说出口"]},
+{n:"三分钟热度", q:["你的热情来得快去得快","你爱上一件事，很快又腻了","你总在「换兴趣」的路上","你的作品很多，完成很少","你害怕「坚持」的枯燥","你的天赋很高，兑现很少","你的人生常卡在「刚开始」","你羡慕那些「深耕」的人，却管不住自己"]},
+{n:"逃避规划", q:["你讨厌「计划」，喜欢「随性」","你的生活一团乱，你也懒得整理","你总说「到时候再说」","你回避「钱、账、未来」这些事","你的自由，有时是「不负责任」","你活在当下，却常为未来买单","你拒绝「长大」，因为长大意味着「计划」","你的随性，常以「麻烦」收场"]},
+{n:"过度敏感", q:["你太容易受伤","别人一句无心的话，你能记很久","你的情绪常被外界牵动","你怕被否定，所以不敢尝试","你的自尊心很脆，容易碎","你常因「想太多」错过机会","你把「批评」当成「否定」","你的敏感，让你活得小心翼翼"]},
+{n:"自我否定", q:["你总觉得自己「不够好」","别人夸你，你不敢信","你习惯先看到自己的不足","你的作品很好，你却总说不满意","你总拿自己和别人比，然后自我怀疑","你不敢争取，因为「怕不配」","你把「低调」活成了「自卑」","你其实很有才华，却从不敢承认"]},
+{n:"情感逃避", q:["你遇到问题，第一反应是「躲」","你不愿面对「沉重」的关系话题","你的感情遇到矛盾，你选择「消失」","你宁可换一段关系，也不愿修复一段","你怕「受伤」，所以从不「投入」","你的爱，常是「浅尝辄止」","你总在「快要深入」时逃跑","你错过很多真心，因为怕负责"]},
+{n:"忽视需求", q:["你总在迁就别人，忘了自己","你说「都可以」，其实有偏好","你的需求常被你自己忽略","你怕「麻烦别人」，所以不说","你把「将就」当成了习惯","你为自己的事总「下次再说」","你照顾别人的感受，却委屈了自己","你的「无所谓」，背后都是「有所谓」"]}
+]};
+TYPE_DIMS["ESTP"] = {tag:"行动派的冒险家，却常把自己的心落在身后", dims:[
+{n:"冲动行事", q:["你行动太快，常来不及想后果","你凭「感觉」做决定，事后常后悔","你追求刺激，容易忽略风险","你说话太直，常伤人而不自知","你的「果断」，有时是「鲁莽」","你享受「赌一把」的快感","你很少复盘，同样的坑踩两次","你的速度，常让你错过「该慢」的时刻"]},
+{n:"逃避深度", q:["你讨厌「沉重」的话题","你总用「忙」逃避「面对」","你的关系常停留在「表面热闹」","你很难坐下来，认真谈一次心","你把「认真」当成「无趣」","你回避承诺，因为承诺意味着「深度」","你的感情，常以「无疾而终」收场","你怕「深入」，因为深入意味着「负责」"]},
+{n:"忽视感受", q:["你很少关注自己的情绪","你的「累」都被你用「玩」压住了","你习惯「报喜不报忧」","你觉得「想太多」是浪费时间","你的压力，常以「暴躁」爆发","你很少问自己「我开心吗」","你的情绪，都被你「跳过」了","你把「不在乎」当成盔甲"]},
+{n:"过度自信", q:["你总觉得自己「没问题」","你低估风险，高估自己","你听不进「劝」，觉得「他们不懂」","你的自信，有时是「自负」","你栽过跟头，还觉得「是运气不好」","你很难承认「我错了」","你的「我能行」，常让你摔得很惨","你从不给自己「留后路」"]},
+{n:"关系消耗", q:["你朋友很多，深交很少","你的关系，常因「没空维护」而淡","你说话太冲，常无意伤到人","你赢了场面，却输了真心","你把「社交」当「资源」，把「朋友」当「人脉」","你很少为一个人「停留」","你的热闹，掩盖不了你的孤独","你身边很多人，却没几个懂你"]},
+{n:"三分钟热度", q:["你的热情来得快去得快","你开了很多头，很少收尾","你总在「找下一个刺激」","你很难「重复」做一件事","你的天赋很高，兑现很少","你羡慕深耕的人，却停不下来","你的人生常「虎头蛇尾」","你的潜力，常被「新鲜感」浪费"]},
+{n:"情感失联", q:["你很难说「我爱你」「我想你」","你的关心，常以「行动」出现，从不出口","你被误解时，懒得解释","你的伴侣常觉得「抓不住你」","你害怕「黏腻」，常把人推开","你的爱很直接，却很粗糙","你很少问「你今天过得怎么样」","你爱一个人，却让ta感觉不到"]},
+{n:"身体透支", q:["你熬夜、应酬、拼命，觉得「没事」","你的身体小毛病不断，你从不放心上","你总说「还年轻，扛得住」","你的「玩」和「拼」，都在透支自己","你很少体检，觉得「麻烦」","你的身体已报警，你还在「加速」","你把自己的健康，当成「赌注」","你的人生很精彩，却可能「戛然而止」"]}
+]};
+TYPE_DIMS["ESFP"] = {tag:"舞台中央的太阳，却常让自己活在别人的掌声里", dims:[
+{n:"寻求关注", q:["你太需要「被看见」","没人回应时，你会失落","你的快乐，常建立在别人的反应上","你总在「表演」，怕冷场","你发的东西没人点赞，会失落","你怕「被忽略」，所以拼命刷存在感","你的价值感，常系在别人的眼光上","你活在聚光灯下，却怕灯灭"]},
+{n:"逃避痛苦", q:["你习惯用「快乐」掩盖「难过」","你从不让人看见你的眼泪","你遇到问题，第一反应是「玩一玩就好了」","你把「不去想」当成「解决」","你的「乐观」，有时是「逃避」","你从不正面处理「沉重」的事","你的痛苦，都被你「笑」过去了","你欠自己一场真正的「大哭」"]},
+{n:"三分钟热度", q:["你的热情来得快去得快","你学什么都快，但很少坚持","你总在「换新」的路上","你开了很多头，很少收尾","你害怕「重复」和「无聊」","你的天赋很高，兑现很少","你的人生常「热闹开场，草草收场」","你羡慕「深耕」的人，却静不下来"]},
+{n:"忽略规划", q:["你讨厌「计划」，只想过好今天","你的钱、时间、未来，都是一团乱","你总说「到时候再说」","你回避「责任」和「长久」","你的自由，常以「麻烦」收场","你活在「此刻」，却常为「后来」买单","你拒绝「长大」，因为长大意味着「负责」","你的随性，让爱你的人没有安全感"]},
+{n:"情感浅层", q:["你的关系很多，深交很少","你总在「逗人开心」，很少「交心」","你怕「沉重」，所以不谈「真心」","你的感情，常「来得快去得也快」","你很少问自己「我爱ta吗」","你把「陪伴」当成「爱」","你身边的人觉得「抓不住你」","你的热闹，掩盖不了你的孤独"]},
+{n:"自我价值依附", q:["你的自信，常建立在「被喜欢」上","没人捧场时，你会怀疑自己","你总在「讨好」，怕被讨厌","你的价值感，系在别人的评价上","你很难接受「有人不喜欢我」","你把自己活成了「别人眼中的样子」","你的快乐，太依赖「外界的掌声」","你忘了：你的价值，不需要别人证明"]},
+{n:"忽视内心", q:["你很少问自己「我想要什么」","你的情绪，都被「热闹」盖住了","你从不独处，因为独处时心慌","你对自己的了解，停留在「表面」","你的需求，常被你忽略","你把自己活成了「大家喜欢的样子」","你很久没听过内心的声音","你热闹了所有场合，却从没好好陪过自己"]},
+{n:"身体透支", q:["你玩起来就忘了「累」","你熬夜、狂欢，第二天硬撑","你的身体小毛病不断，你从不放心上","你总说「再玩一会儿」","你把自己的能量，当成「取之不竭」","你的「尽兴」，常以「透支」为代价","你很少照顾自己的健康","你的精彩，正在透支你的「续航」"]}
+]};
+TYPE_REPORTS["INTJ"] = {
+"混沌之茧": {t:"你锋利，但也锋利地伤着自己", lead:"此刻的你，不是不够强，而是强到忘了自己也会疼。", parts:[
+"你的大脑像一个高速运转的引擎，永远在规划、判断、优化。你总能看到别人看不到的漏洞，也总能在混乱中理出秩序——这是你的天赋，也是你孤独的起点。",
+"可你也在用同一套标准对待自己。情绪来了，你让它「排队」；身体累了，你让它「撑住」；关系需要温度了，你递过去的却是一份解决方案。你并非冷漠，你只是把温柔都藏在了逻辑后面，藏到连自己都快找不到。",
+"这个阶段的你，最擅长的是「硬扛」。你以为扛过去就是赢，却没发现：那些被你压下去的难过并没有消失，它们只是换了一种方式，在深夜、在独处时，加倍地回来找你。",
+"你不是坏掉了，你只是太早学会了用铠甲保护自己。而铠甲穿久了，会忘了里面那个人也需要被拥抱。"],
+quote:"你总是先解决问题，再处理心情——可你忘了，有些问题本身就是心情。",
+advice:"试着从今天起，每天允许自己「没有理由地难过十分钟」。不需要解决它，只需要承认它。你会惊讶地发现，承认脆弱不会让你崩塌，反而让你第一次真正站稳。"},
+"觉醒之芽": {t:"你开始听见，心里那个被忽略的声音", lead:"你依然理性，但已经学会在理性里留一个位置给感受。", parts:[
+"你开始察觉：当你说「没事」的时候，其实有事。当你说「我自己可以」的时候，其实很希望有人问你一句「累不累」。看见这些，不是软弱，而是你人格里最勇敢的一次转身。",
+"这个阶段的你，正在经历一种拉扯：理智告诉你「这没意义」，感受却轻声说「可我在乎」。你会在这两种声音之间摇摆，甚至会因为「居然在意」而对自己失望——请别这样，那个在意，才是你完整的证据。",
+"你开始尝试一些「不高效」的事：陪朋友聊无关紧要的天，允许自己休息一个下午，在别人难过时先闭嘴、再伸手。这些事没有 KPI，却让你第一次觉得自己是「活着的」，而不只是「运转着的」。",
+"你依然会退回铠甲里，没关系。成长不是不再后退，而是每次后退后，都更清楚自己要去哪里。"],
+quote:"理性让你走得快，柔软才让你走得远。你终于开始明白这句话了。",
+advice:"挑一件你以前觉得「浪费时间」的小事，每周做一次：散步、发呆、给想念的人发一句废话。你会发现，那些「没意义」的时刻，正在悄悄补齐你生命里最缺的拼图。"},
+"整合之光": {t:"锋利与温柔，开始在你身上和解", lead:"你不再用冷漠保护自己，因为你终于确认：完整比完美更有力量。", parts:[
+"这是一个奇妙的阶段：你依然能一眼看穿问题的本质，但你已经学会先看看对面的人。你的建议依然精准，但会裹上温度；你的标准依然高，但开始允许自己「够好」，而不是「完美」。",
+"你发现，承认情绪并不会削弱你的判断，反而让你更清醒。你开始能同时握住「逻辑」和「感受」这两把钥匙，在需要的时候打开对的那扇门。你的理性变得有温度，你的温柔变得有边界——这正是高阶人格的样子。",
+"身边的人开始觉得你「更好相处了」，只有你知道，你不是变弱了，而是把原本用来防御的能量，都收回来建设自己了。你不再急着证明什么，因为你已经知道自己是谁。",
+"你依然喜欢独处，但不再是因为害怕人群，而是因为享受和自己的对话。孤独不再是一种惩罚，而成了一种被你选中的生活方式。"],
+quote:"真正的强大，是既能扛起世界，也能接住一句「我心疼你」。",
+advice:"你已经具备了温柔的能力，现在请把它变成习惯：每周主动关心一个人，不是解决问题，只是让对方知道「你在」。你会看见，你给出的温度，会以你意想不到的方式回到你身上。"},
+"圆融之境": {t:"你成了那个既能望见星辰，也能俯身拥抱的人", lead:"你抵达的不是「完美」，而是「完整」——这是比完美更高的地方。", parts:[
+"走到这里的你，把曾经的盲区都酿成了天赋：你的深思熟虑里有了体贴，你的战略眼光里有了人情。你依然清醒，但你的清醒不再让人有距离感，而让人感到安全——因为人们知道，你会看见问题，也会看见他们。",
+"你终于明白：情绪不是理性的敌人，而是理性最好的情报员。你不再压制感受，而是听它说话，再让判断做决定。你的决策因此更准，你的关系因此更深，你的人生因此第一次有了「轻盈」的质感。",
+"你学会了示弱，而示弱让你真正强大。你可以在深夜里说一句「今天有点累」，然后发现有人愿意陪你坐一会儿；你也可以在不确定时说「我不知道」，然后发现那反而让你更可信。",
+"你依然是你：那个眼里有星辰、心里有蓝图的人。只是如今的你，心里还多了一盏灯——为你自己，也为那些曾像你一样、在黑暗里独自硬扛的人。"],
+quote:"你花了很久才学会的，不是成功，而是被爱。而你现在知道，这两件事，你一直都值得。",
+advice:"你已完整，请继续做那个温柔而清醒的人。如果还有什么要练习的，那就是把你的光，分给那些还困在茧里的人——你曾走过的路，如今是别人的灯塔。"}
+};
+TYPE_REPORTS["INTP"] = {
+"混沌之茧": {t:"你懂太多道理，却太少把自己活进现实", lead:"你的世界很大，大到装得下整个宇宙——小到装不下一个行动。", parts:[
+"你的大脑是一片自由的原野：概念在你脑海里跳舞，逻辑像藤蔓一样生长，你能在别人看不到的地方看见联系。这是天赋，是一种近乎神性的好奇心。",
+"可这个阶段的你，正在被这份天赋反噬。你习惯了「理解」而非「完成」，习惯了「思考」而非「行动」。你收藏了无数知识，却很少让它们变成现实里的作品；你拥有无数可能性，却常常被自己的思考困在原地。",
+"你还会用「不够懂」来惩罚自己。别人眼中的你已经足够聪明，只有你知道那个声音——「你还不够」。你躲进理论里，有时候不是因为热爱，而是因为那里比现实安全。",
+"你不是懒，你只是害怕：怕行动之后发现，自己并不像想象中那么特别。可你知道吗？那些真正走到远处的，从来不是想得最透彻的人，而是愿意带着困惑出发的人。"],
+quote:"你总在等「完全想清楚」的那天，可人生不是定理，是要边推演边落子的棋局。",
+advice:"选一件你搁置最久的事，给自己一个「烂尾也允许」的截止日，逼自己在期限内交出一个「不完美版本」。完成一次不完美，胜过十次完美的想象——你会第一次尝到「落地」的踏实。"},
+"觉醒之芽": {t:"你开始从思想的天空，降落回真实的大地", lead:"你依然爱思考，但你已经明白：有些答案，只在行动里出现。", parts:[
+"你开始察觉到那个循环：越焦虑越思考，越思考越拖延，越拖延越自我否定。看见循环本身，就是你打破它的第一步。你不再无条件相信脑内的每个声音，开始学会「把想法写下来，再决定是否相信它」。",
+"这个阶段的你，正在笨拙地练习「动手」。你强迫自己先写三行，哪怕不满意；先发一版，哪怕不够好；先开始，哪怕不知道对不对。每一次「先动起来」，都在悄悄削弱那个困住你的完美主义。",
+"你也在学习与情绪相处。你发现情感不是需要被解决的问题，而是需要被听见的信号。你开始尝试回应别人的关心，而不是只回一篇分析。你依然笨拙，但笨拙的真诚，比聪明的躲闪动人得多。",
+"你偶尔还是会逃回脑内世界。没关系，那曾是你的避难所。只是现在的你知道：那里适合休息，不适合居住。"],
+quote:"你不需要想明白一切才配出发。出发，才是你想明白一切的唯一方式。",
+advice:"给自己定一条铁律：想法超过 72 小时没有行动，就把它压缩成「只做 15 分钟」的最小版本。不是放弃，而是让想法有机会活下来。"},
+"整合之光": {t:"好奇与专注，在你身上终于合流", lead:"你依然看得见整片星空，但你终于学会了为一颗星造船。", parts:[
+"这是一个神奇的阶段：你开始能把「广泛的好奇」和「深入的精通」握在同一只手里。你依然对一切感兴趣，但你已经学会挑选——哪些值得你投入，哪些只需要欣赏。你不再用「没意思」掩盖恐惧，而是用「我选择」替代「我逃避」。",
+"你的行动力开始跟上你的思维。你发现，当你想清楚「为什么做」，「怎么做」就不那么可怕。你交出的作品开始变多，而每一个完成的作品，都在告诉你：你不是「想想而已的人」，你是能创造的人。",
+"你也学会了与情绪握手言和。你不再把情感当成干扰项，而是当成数据源——它告诉你哪里疼、哪里在乎、哪里需要慢下来。你的关系开始有温度，因为你不只输出观点，也开始输出「我在」。",
+"你依然享受独处，但你的独处不再是逃避，而是充电。你从那个「躲进脑内世界的人」，变成了「带着脑内世界走进现实的人」。"],
+quote:"世界不缺天才的想法，缺的是把想法变成礼物的勇气。而你，正在成为那个送礼的人。",
+advice:"选一个你最爱的话题，把它做成一份「完成品」——写一篇文章、做一个小工具、整理成一份分享。让它离开你的脑海，去真实世界呼吸。你会发现，完成不是终点，是你与世界的第一次握手。"},
+"圆融之境": {t:"你成了思想的建筑师，也是生活的诗人", lead:"你终于明白：最高的智慧，是既能仰望，也能入世。", parts:[
+"走到这里的你，把「想」和「做」焊成了一体。你的洞察依然深邃，但你已经能把它变成现实里的作品；你的好奇依然辽阔，但你已经懂得在辽阔中选择深耕。你不再是那个「什么都懂一点、什么都没留下」的人，而是那个「用自己的方式，留下了印记」的人。",
+"你学会了让情绪为你工作。你不再躲开感受，而是把它翻译成创造的能量：难过时写作，困惑时研究，心动时表达。你的作品开始有体温，因为你知道，真正打动人的从来不是完美的逻辑，而是逻辑背后那个鲜活的人。",
+"你拥有了「恰到好处的连接」：你可以深度地陪伴一个人，也可以清醒地退回自己的空间；你可以享受思想的盛宴，也珍惜一顿饭的踏实。你不再用「不需要关系」掩饰孤独，而是真正拥有了「选择关系」的自由。",
+"你依然是那个脑内宇宙的漫游者，只是如今，你带着地图回来了——并且愿意把地图分享给每一个还困在迷雾里的人。"],
+quote:"你用了很多年才学会：思想不是用来逃离世界的，是用来更深情地理解世界的。",
+advice:"你已完整。请继续创造、继续好奇、继续把脑内的星辰一颗颗点亮成现实。也别忘了，偶尔停下来，让那个爱思考的你，好好吃一顿饭、好好爱一个人。"}
+};
+TYPE_REPORTS["ENTJ"] = {
+"混沌之茧": {t:"你征服了所有战场，却还没学会和自己休战", lead:"你太擅长赢，以至于忘了：人生不是每件事都该用赢来丈量。", parts:[
+"你是那种注定要往前冲的人。你目光如炬，目标清晰，执行力惊人，你能把混乱变成秩序，把想法变成现实。你的存在本身，就是一种让人安心的力量——所有人都知道，跟着你，会有结果。",
+"可这个阶段的你，正在为这份力量付出代价。你把自己当成一台永不停机的引擎，用「结果」衡量一切，包括自己。你不敢停，因为一停下来，那个「我不够好」的声音就会追上你；你不允许失败，因为在你心里，失败等于「我不配」。",
+"你对别人强势，对自己更狠。你把温柔锁在「为你好」的盔甲里，把疲惫咽进「我没事」的沉默里。你赢得了一场又一场仗，却发现自己越来越孤独——因为没人敢靠近一个从不需要帮助的人。",
+"你不是冷血，你只是太早学会了用强大保护自己。可真正的强大，从来不是永不倒下，而是敢说一句：我也需要休息。"],
+quote:"你把人生过成了一场战役，却忘了问自己：打完这场，你是赢了世界，还是弄丢了自己？",
+advice:"从今天起，每周给自己安排一段「没有产出」的时间：不做计划、不设目标，只是活着。你会发现，世界的运转不会因为你休息而崩塌，而你紧绷了太久的心，第一次有机会喘口气。"},
+"觉醒之芽": {t:"你开始看见，强势之外还有另一种力量", lead:"你依然会赢，但你开始想赢的时候，也带上身边的人。", parts:[
+"你开始意识到：那些被你当作「效率噪音」的感受，其实是最重要的情报。你开始注意到，当你下令时，有人欲言又止；当你赢了争论时，有人默默疏远。看见这些，是你人格第一次学会「慢下来」的瞬间。",
+"这个阶段的你，在经历一场内部革命：你的本能说「快、准、狠」，你的新认知说「慢一点，看看人」。你会在这两种声音里反复，偶尔又会退回强势——没关系，每一次退回，都是在为下一次「选择温柔」积蓄证据。",
+"你开始尝试一些笨拙的练习：先说「你觉得呢」，再给结论；先承认「我也累」，再谈目标；先道歉，再解释。这些事让你的效率打了折扣，却让你的关系第一次有了温度。",
+"你依然是那个指挥官，只是你开始明白：最好的统帅，不是让人怕你，而是让人愿意跟你。"],
+quote:"你可以赢下所有战斗，但只有学会示弱，你才赢得了一个人真正的心。",
+advice:"挑一位你在乎的人，这周做三件事：问一次ta的感受、说一次「谢谢你」、承认一次「我也有错」。你会发现，这些「低效」的时刻，正在悄悄改变你人生的质地。"},
+"整合之光": {t:"权威与温度，开始在你身上并行不悖", lead:"你依然是指挥官，但你已经学会了：带领，不是统治。", parts:[
+"这是一个了不起的阶段：你依然目标明确、行动果决，但你已经懂得在冲锋前先看一眼身边的人。你的指令里开始有解释，你的高标准里开始有台阶，你的强势里开始留出「对方可以说不」的空间。",
+"你发现，把「人」放回你的方程式里，并没有拖慢你的脚步，反而让你走得更稳。因为你不再孤军奋战——人们开始真正愿意跟你，不是因为怕你，而是因为信你。",
+"你学会了对自己的宽容：允许自己有一次「不完美」，允许计划出现「意外」，允许自己在某个深夜承认「我今天很累」。你发现，这些「允许」没有让你变弱，反而让你第一次有了真正的底气。",
+"你依然渴望赢，但你已经分得清：有些仗要打赢，有些关系要经营。你不再用全部的生命去证明自己，因为你终于开始相信——你本身就值得。"],
+quote:"真正的统帅力，不是让所有人服从你，而是让所有人愿意成为自己，然后陪你一起赢。",
+advice:"把「温柔」正式纳入你的管理清单：每周一次，不带目的地和一个人吃顿饭，只聊生活，不谈目标。你会发现，它带来的回报，远超你的任何一场胜仗。"},
+"圆融之境": {t:"你成了那个既能指点江山，也能握住一只颤抖的手的人", lead:"你把「赢」的执念，酿成了「成全」的智慧——这是统帅的最高形态。", parts:[
+"走到这里的你，完成了人格里最深的一次整合：你的果决里有了慈悲，你的强大里有了柔软。你依然能在危机中迅速决策，但你更懂得先稳住人心；你依然追求卓越，但你更明白「人比目标重要」。",
+"你学会了一种高级的示弱：承认自己不知道，反而让团队更信你；承认自己需要支持，反而让人更亲近你。你不再是那个「独自扛下一切」的孤王，而是那个「让每个人都成为自己的王」的领袖。",
+"你的关系变得深厚而自由：你能直接地表达需求，也能坦然地接受照顾；你能在争论中坚持观点，也能在转身后温柔地道歉。你赢得的，不再是掌声，而是真心。",
+"你依然是那台曾经停不下来的引擎，但如今你学会了检修自己。你知道什么时候该全速前进，也知道什么时候该停下来，看看路边的花开。你终于活成了自己的统帅，而不是自己的暴君。"],
+quote:"你征服了世界，又花了很久才学会的，是放下铠甲，去拥抱那个一直等在原地的人——包括你自己。",
+advice:"你已抵达高处，那里风景很好。请记得常常下山，回到那些不需要你「赢」的地方：一顿家常饭、一次散步、一句「我到家了」。真正的圆满，不在山顶，在人间。"}
+};
+TYPE_REPORTS["ENTP"] = {
+"混沌之茧": {t:"你点亮了所有人的夜空，却把自己留在暗处", lead:"你是那个总能点燃气氛的人，可你很少问自己：谁来点燃你？", parts:[
+"你有一种罕见的天赋：你能在任何地方看到可能性，把无聊变成有趣，把僵局变成游戏。你是人群里的火花，是永远有新点子的那个人。和你在一起，世界永远是新鲜的。",
+"可这个阶段的你，正被这份天赋反噬。你习惯了追逐新鲜，却很少走到「深入」；你习惯了开始，却害怕「坚持」的枯燥；你用幽默化解一切沉重，却把自己真正的情感藏在了玩笑后面。你让所有人开心，唯独让自己越来越空。",
+"你害怕停下来。因为一停下来，那个安静的你会问：除了有趣，我到底是谁？你于是继续点火、继续热闹、继续逃避——可逃避久了，热闹也救不了你。",
+"你不是肤浅，你只是太聪明，聪明到看穿了一切，却还没找到值得你认真对待的东西。而那份「认真」，恰恰是你最需要的东西。"],
+quote:"你把人生过成了一场烟花秀：璀璨、热闹、转瞬即逝。可你忘了，烟花也需要有人，在散场后接住它。",
+advice:"从今天起，每周留一小时「无聊时间」：不刷手机、不找乐子，就和自己待着。让那个喧闹的你安静下来，听听看，安静里有没有一个被你忽略的声音。"},
+"觉醒之芽": {t:"你开始认真了——而认真，是你的另一种天赋", lead:"你依然是那个有趣的人，只是你开始允许自己，也有沉重的时刻。", parts:[
+"你开始察觉：那些被你用玩笑挡开的话题，其实是你最在意的东西。你开始愿意在一段对话里，放下抖机灵，认真说一句「这对我来说很重要」。那个瞬间，你自己都吓了一跳——原来认真，不是无趣，而是勇气。",
+"这个阶段的你，正在和「三分钟热度」搏斗。你依然会被新想法吸引，但你开始学会回头，把上一件事做完。你发现，做完一件事的踏实，比开始十件事的兴奋，更让你安心。",
+"你也在练习「不逃」：不逃离承诺，不逃离关系，不逃离自己的感受。你依然害怕「定下来」，但你已经愿意试试「多留一会儿」。那些被你错过的人，开始重新走近你。",
+"你依然热爱自由，但你已经明白：真正的自由，不是永远不选择，而是有能力选择，并愿意承担。"],
+quote:"你可以点燃一万个念头，但只有坚持到绽放的那一个，才真正属于你。",
+advice:"选一个你最爱的「未完成项目」，给它一个完成期限，逼自己走完最后 20%。你会尝到一种陌生的快感：它不是兴奋，是「终于落地」的踏实。"},
+"整合之光": {t:"火花与恒心，开始在你身上合而为一", lead:"你依然是那个最有趣的人，但你已经学会了：有趣的尽头，是深刻。", parts:[
+"这是一个奇妙的阶段：你依然灵光四射、点子不断，但你已经学会在火花之后，蹲下来把它养成火种。你开始拥有「把有趣变成有用」的能力——你的创意开始落地，你的热情开始持续，你的名字开始和「完成」连在一起。",
+"你学会了在辩论里收刀：你依然喜欢思想的碰撞，但你不再以「赢」为目的，而是以「看清」为目的。你说「你说得对」的次数变多了，而这份谦虚，让你的聪明真正开始发光。",
+"你也在学习「认真去爱」：认真对待一个人，认真对待一段关系，认真对待自己说过的话。你发现，当你愿意深情，世界回馈你的，比所有玩笑加起来都多。",
+"你依然热爱自由，但你拥有了「深耕的自由」：不是被拴住，而是你选择留下，因为这里值得。"],
+quote:"你曾以为深刻是无聊的，直到你亲手把一件事做到了深处，才发现那里有整片星空。",
+advice:"把你最擅长的一件事，认真做到「让同行佩服」的程度。你会发现，浅尝辄止带来的兴奋，只是星星；深耕之后的笃定，才是月亮。"},
+"圆融之境": {t:"你成了那个既会点火，也会守护火焰的人", lead:"你终于明白：人生最好的状态，是既能天马行空，也能落地生根。", parts:[
+"走到这里的你，完成了人格里最动人的整合：你的创造力有了根基，你的自由有了方向，你的幽默有了重量。你依然是那个能让全场亮起来的人，但你已经懂得，真正耀眼的光芒，来自持续的燃烧，而不是瞬间的火花。",
+"你学会了把「可能性」变成「现实」：你依然能看到无数条路，但你已经懂得挑选一条，走到底。你不再用「也许可以」搪塞自己，而是用「我决定」开启人生。你的作品、你的关系、你的承诺，都开始有了一种沉甸甸的分量。",
+"你拥有了一种罕见的平衡：既能享受人群的喧闹，也能安住独处的寂静；既能天马行空地想象，也能一丝不苟地执行；既能幽默地化解尴尬，也能深情地接住眼泪。",
+"你依然是那个点火人，只是如今，你不再把自己留在暗处。你学会了用同样的光和热，照亮自己。"],
+quote:"你曾以为人生是一场接一场的烟花，后来你才发现：真正的你，是一盏一直亮着的灯。",
+advice:"你已抵达圆满。请继续做一个有趣而深刻的人，也别忘了：偶尔关掉所有热闹，陪自己安静地坐一会儿——那个安静的你，是你所有光的源头。"}
+};
+TYPE_REPORTS["INFJ"] = {
+"混沌之茧": {t:"你温柔了全世界，却把最狠的话留给了自己", lead:"你是最懂人心的人，可你对自己，却最不温柔。", parts:[
+"你有一种几乎通灵的能力：你能在一个人开口前，就懂ta的欲言又止；你能在一群人里，精准地接住每个落空的情绪。你是天生的疗愈者，是朋友深夜第一个想到的人。你的存在，本身就是很多人的安慰。",
+"可这个阶段的你，正在把自己掏空。你习惯了先照顾别人，再（或许）照顾自己；习惯了说「没关系」，把「有关系」咽回去；习惯了替所有人着想，却忘了问问自己：你今天，还好吗？",
+"你心里住着一个理想主义者，它让你对世界有很高的期待，也让你对自己格外严厉。你总觉得自己「还不够好」「还不够努力」，却看不见：你已经给了太多，多到别人都开始心疼你，只有你还在责怪自己。",
+"你不是需要修复的，你只是太会爱别人，还不太会爱自己。而爱自己，恰恰是你给过别人的那种温柔——现在，请把同样的温柔，留一点给你自己。"],
+quote:"你总在问别人「你还好吗」，却从不问自己。今天，我想替所有人问你一句：你还好吗？",
+advice:"从今天起，每天睡前问自己一个问题：「今天，我为自己做了什么？」如果答案是「没有」，明天就做一件小事——一杯热茶、一段散步、一句「我今天不想帮忙」。你值得被你自己的温柔覆盖。"},
+"觉醒之芽": {t:"你开始学会，把自己的名字写进名单里", lead:"你依然温柔，但你开始温柔地对待自己。", parts:[
+"你开始察觉那些「没关系」背后的委屈。你开始注意到：当你又一次牺牲自己成全别人时，心里那个小小的声音。你不再立刻压下它，而是试着问它：「你还好吗？」——这短短一问，是你人格里第一次真正转向自己。",
+"这个阶段的你，在练习一件很难的事：把「拒绝」说出口。你依然会内疚，依然会在说完「不」之后反复回想，但你已经迈出了那一步。你发现，世界并没有因为你拒绝而崩塌，反而有些关系，因为你的真实而更近了。",
+"你也在学着放下「完美」的鞭子。你开始允许自己交付「够好」的作品，允许自己有「做不到」的时候，允许那个理想主义的你，偶尔对现实妥协。你发现，放下鞭子之后，你反而走得更远。",
+"你依然会共情别人，但你已经学会在共情之后，把自己从情绪的漩涡里捞出来。你不是变冷漠了，你是在学习「可持续地温柔」。"],
+quote:"你不是自私，你只是终于明白：一个空杯子的温柔，救不了任何人，包括你自己。",
+advice:"本周做一件「为自己」的事：拒绝一次不想去的约，或者把「我想……」说出口。你会发现，你的温柔没有减少，反而因为你开始爱自己，变得更加有力量。"},
+"整合之光": {t:"你的温柔，开始有了边界和力量", lead:"你依然是那个疗愈者，但你已经学会了先稳住自己的船。", parts:[
+"这是一个珍贵的阶段：你的共情依然敏锐，但你已经学会了「进去，再出来」。你依然能接住别人的情绪，但你已经不会再被它淹没。你的温柔不再是消耗，而成了一种稳定的给予——因为你终于学会了给自己补充。",
+"你开始拥有「清晰的身份感」：你知道自己想要什么，也敢说出来；你懂得拒绝，而不内疚；你不再把价值建立在别人的认可上，而是建立在自己的选择上。你的理想主义没有消失，它从「折磨你的标准」变成了「照亮你的方向」。",
+"你的关系开始变得健康而深刻：你不再单方面付出，而是允许别人接住你；你不再怕暴露脆弱，因为你发现，真实的你比完美的你更值得被爱。你身边开始出现真正懂你的人——因为你先懂了自己。",
+"你依然会为世界的不完美而难过，但你已经学会：在难过之后，做一件具体的小事，让世界好一点点。你不再苛求改变全世界，你开始改变「你的世界」。"],
+quote:"真正的温柔，不是没有棱角，而是明知有棱角，仍选择善良，且先对自己善良。",
+advice:"把「照顾自己」正式加入你的日程：每周一次，像照顾最好的朋友那样照顾自己——好好吃饭、好好休息、允许自己不做任何人的救世主。"},
+"圆融之境": {t:"你成了光本身——先照亮自己，再照亮世界", lead:"你终于明白：疗愈者的最高形态，是让自己也活在光里。", parts:[
+"走到这里的你，完成了人格里最深的整合：你的理想主义落地了，你的温柔有边界了，你的共情不内耗了。你依然是那个一眼看穿人心的人，但你看穿之后，不再替别人活，而是陪着别人，让他们自己站起来。",
+"你学会了一种高级的慈悲：不拯救，只陪伴；不评判，只看见。你不再把别人的课题背在自己身上，而是把力量还给他们。你的关系因此变得轻松而深刻——因为你不再「扛着」别人，而是「照亮」别人。",
+"你终于允许自己「被爱」：允许别人照顾你，允许自己依赖，允许自己不是永远坚强的那个。你发现，当你愿意被接住，你反而成了更完整的疗愈者——因为你知道被爱的滋味，才能教别人如何爱自己。",
+"你的理想依然在，但你不再为它的遥远而痛苦。你开始相信：每一件你做过的小事，都让这个世界靠近了你的理想一点点。而你，就是那个「理想」活在人间的样子。"],
+quote:"你用了很久才学会：先成为自己的光，你的温柔才不会变成别人的拐杖。",
+advice:"你已抵达圆满。请继续温柔，也请继续被温柔以待。你要做的，不是燃烧自己照亮别人，而是成为一盏灯——你的光，本身就是给世界最好的礼物。"}
+};
+TYPE_REPORTS["INFP"] = {
+"混沌之茧": {t:"你心里住着一个诗人，却被现实关进了密室", lead:"你的灵魂比谁都丰富，可你总觉得自己不够好、不够勇敢、不够值得。", parts:[
+"你有一种旁人没有的天赋：你能看见世界最细腻的纹理，能感受最幽微的情绪，你心里有一个完整而辽阔的宇宙——那里有故事、有画面、有无数种可能性。你是天生的诗人、梦想家、治愈者。",
+"可这个阶段的你，正被这个宇宙困住。你的内心戏太多，把能量都耗在「想」上；你的理想太高，把行动都卡在「怕」上；你太在意别人的眼光，把自己的形状活丢了。你明明拥有一整个宇宙，却常常觉得自己一无所有。",
+"你最擅长的事，是把自己藏起来。藏起真实的感受，藏起尖锐的想法，藏起那个「不完美」的自己。你以为这样就不会受伤，可你不知道，当你藏起自己的时候，也把所有的光一起藏了起来。",
+"你不是脆弱，你只是还没学会：这个世界配得上你的真实。你的温柔、你的敏感、你的理想主义，都不是缺陷——它们是你最珍贵的部分，只是还没找到出口。"],
+quote:"你总是先照亮别人，却忘了自己也在黑暗里。你值得被你自己温柔以待。",
+advice:"从今天起，每天写下一句「真实的感受」，不修饰、不评判，只记录。你要做的第一件事，不是改变世界，而是让真实的你，先从笔尖走出来。"},
+"觉醒之芽": {t:"你开始试着，让内心那个诗人在现实里呼吸", lead:"你依然敏感，但你开始学会用这份敏感，保护自己，而不是伤害自己。", parts:[
+"你开始察觉：那些汹涌的情绪，不是你「太脆弱」，而是你「太鲜活」。你开始试着用文字、用画、用创作，把内心的洪水引向河道——当你第一次把「说不清的感受」表达出来，你感到一种久违的轻盈。",
+"这个阶段的你，在练习「行动」这件小事。你依然会害怕、会拖延，但你开始逼自己「先做三分钟」。你发现，一旦开始，恐惧就会缩小。你那些「本可以」的故事，开始有了一些「做到了」的结局。",
+"你也在学习「设立边界」：第一次说「不」，第一次表达「我不喜欢」，第一次在关系里说出「我需要」。你依然会内疚，但你开始明白：你的感受，和别人的感受一样重要。",
+"你依然渴望意义，但你开始相信：意义不是找到的，是活出来的。你的一小步，本身就是意义的一部分。"],
+quote:"你不是不够好，你只是还没学会，把自己的光对准自己。",
+advice:"每周做一件「以前只敢想」的小事：发一段自己写的文字、画一幅不完美的画、拒绝一次不想去的约。让行动，成为你对自己灵魂的回应。"},
+"整合之光": {t:"敏感，成了你最温柔的力量", lead:"你终于学会：不与自己的情绪对抗，而是与它共舞。", parts:[
+"这是一个奇妙的阶段：你的敏感不再消耗你，而成了一种天赋。你能精准地读懂人心，能创造动人的作品，能在别人看不见的地方发现美。你开始懂得：这份敏感不是诅咒，是你灵魂的礼物，只是以前你还不会使用它。",
+"你学会了「情绪的翻译」：不再被情绪淹没，而是听懂它要告诉你什么。难过时，你问它「你在保护什么」；焦虑时，你问它「你在害怕什么」。你不再和自己的感受打仗，而是学会与它共处——这份和解，让你第一次活得轻松。",
+"你的行动力开始匹配你的想象力。你不再等「完美」才动笔，而是「先完成，再完美」。你那些曾经困在脑内的故事，开始变成现实里的作品；你那些「本可以」的梦想，开始一个一个落地。",
+"你也在关系中找到了平衡：你依然共情，但你不再为别人的情绪买单；你依然温柔，但你学会了温柔地拒绝。你终于有了自己的形状——不是别人的影子，而是你自己。"],
+quote:"你曾以为敏感是你的软肋，后来你才懂：它让你看见的世界，比别人多了一层光。",
+advice:"把你最想表达的一件事，正式「完成」它——写成一个故事、画成一幅画、做成一次分享。让内心那个诗人，第一次在现实里亮相。"},
+"圆融之境": {t:"你成了那个，既柔软又坚定的人", lead:"你终于抵达了内心的深处：那里不再有战争，只有辽阔。", parts:[
+"走到这里的你，完成了人格里最动人的整合：你的理想与现实和解了，你的敏感与行动合流了，你的温柔与边界共存了。你依然是那个内心住着宇宙的人，但你已经学会：把宇宙的一部分，活成现实。",
+"你拥有了一种高级的安定：你不再需要向任何人证明自己，因为你终于确认了自己的价值。你知道自己是谁、要什么、边界在哪里。你依然会难过、会失落，但你已经不会被它们定义——你学会了「允许」，允许一切发生，也允许自己继续前行。",
+"你的创造力开始真正绽放：你不再等灵感，而是主动邀请它；你不再怕作品「不够好」，而是享受创造的本身。你的作品开始有了一种笃定的质感——因为它们来自一个完整的人，而不只是一个敏感的魂。",
+"你的关系变得深刻而自由：你不再讨好，而是真诚；你不再躲藏，而是展示。你终于相信：真实的你，值得被爱。而这个信念，让你的温柔有了根。"],
+quote:"你花了很久才抵达的，不是完美，而是完整——而完整，比完美美得多。",
+advice:"你已抵达圆满。请继续用你的敏感感受世界，用你的行动创造世界。也请记得：你的温柔不是用来消耗的，是用来绽放的。"}
+};
+TYPE_REPORTS["ENFJ"] = {
+"混沌之茧": {t:"你照亮了所有人，却把自己烧成了灰烬", lead:"你是人群里最温暖的那束光，可光，也需要有地方可以落下。", parts:[
+"你有一种与生俱来的磁场：你走进一个房间，空气会变暖。你能记住每个人在乎的小事，能精准地给到别人需要的东西。你是那个组织聚会的人、化解尴尬的人、深夜接住朋友眼泪的人。你的存在，让很多人觉得「人间值得」。",
+"可这个阶段的你，正在被这份温暖反噬。你把所有人的需求背在身上，却忘了自己也会累；你把「被需要」当成价值，却忘了自己也需要被需要；你笑着问「还有谁需要我」，却没发现，你已经快站不住了。",
+"你最怕让任何人失望，所以你把自己活成了「完美」：完美的朋友、完美的伴侣、完美的同事。可你越完美，别人越看不见那个真实的你——那个也会累、也会难过、也需要被照顾的你。",
+"你不是不懂爱自己，你只是把爱都给了别人，忘了留一份给自己。而这个世界最需要你照亮的地方，其实是你自己心里那个一直等在暗处的角落。"],
+quote:"你总是最后一个想到自己的人。可你知道吗？那束照亮所有人的光，也需要有人为它点一盏灯。",
+advice:"从今天起，每天做一件「只为自己」的小事，并且不告诉任何人：独自散步、看一集喜欢的剧、拒绝一次「不需要你」的帮忙。让「照顾自己」成为你日程表上最重要的一行。"},
+"觉醒之芽": {t:"你开始学会，把自己也放进「需要被照顾」的名单", lead:"你依然是那个温暖的人，但你开始允许自己，也被温暖。", parts:[
+"你开始察觉：当你说「我没事」的时候，其实有事；当你笑着送走最后一个朋友，转身时的那阵空。你不再立刻用「忙碌」填满它，而是第一次允许自己承认：「我今天，也需要被照顾。」",
+"这个阶段的你，在练习一件反本能的事：把「需要」说出口。你依然会担心麻烦别人，但你开始尝试说「我今天很累，可以陪我一会儿吗」「这个忙我帮不了，抱歉」。每一次开口，都在打破那个「我必须无所不能」的魔咒。",
+"你也在学着接受别人的好。别人夸你时，你不再立刻「反弹」回去；别人照顾你时，你不再浑身不自在。你发现，当你允许自己被爱，你的温暖反而更持久了——因为你不再是一盏耗尽自己的灯，而是一个能接住光的容器。",
+"你依然喜欢照顾别人，但你已经懂得：先把自己的杯子倒满，你溢出来的，才叫爱；不然，那叫消耗。"],
+quote:"你不是超人，你只是一个学会了照顾所有人、却忘了照顾自己的人。而现在，你开始记起来了。",
+advice:"本周练习「接受」：别人夸你，就只说「谢谢」；别人帮你，就大方接受；别人关心你，就如实回答「今天不太好」。你会惊讶地发现，你并没有失去什么，反而拥有了更多。"},
+"整合之光": {t:"温暖与边界，开始在你身上同时存在", lead:"你依然是那个太阳，但你学会了：太阳也需要落山，也需要被月亮接住。", parts:[
+"这是一个珍贵的阶段：你的温暖不再是一种消耗，而成了一种从容的给予。你依然能敏锐地看见别人的需要，但你已经学会了「我可以给，也可以不给」；你依然愿意伸出援手，但你已经懂得「先看看自己的电量」。",
+"你学会了「有边界的善良」：你不再为所有人的情绪负责，只为你真正在乎的人停留；你不再用「被需要」证明价值，而是用「我选择」定义自己。你发现，当你不再讨好，那些真正欣赏你的人反而更多了。",
+"你的关系开始变得双向：你给出温暖，也接受温暖；你照顾别人，也允许别人照顾你。你不再是那个「永远在付出」的人，而是一个「懂得交换温度」的人——这样的你，更真实，也更有力量。",
+"你依然光芒万丈，但你已经懂得：真正的光，不是燃烧自己，而是让自己先亮起来，再自然地照亮别人。"],
+quote:"你花了很久才学会：爱别人之前，先爱自己，不是自私，而是让爱可持续的唯一办法。",
+advice:"把你自己的名字，写进你「最想照顾的人」名单的第一位。以后每次想帮别人之前，先问自己：「我累吗？我需要什么？」——你给出的爱，会因为你先被爱而变得更有分量。"},
+"圆融之境": {t:"你成了那个，既温暖又有力量的人", lead:"你终于明白：最深的温柔，是先把自己爱完整。", parts:[
+"走到这里的你，完成了人格里最动人的整合：你的温暖不再以消耗为代价，你的付出不再以迷失为代价。你依然是那个能让所有人感到安心的人，但你已经懂得：你最大的责任，是先成为自己的光。",
+"你拥有了一种罕见的平衡：既能深情地投入关系，也能清醒地保持自我；既能慷慨地给出温暖，也能坦然地接受回馈。你不再用「被需要」来确认存在，而是用「我是谁」来定义价值——这份笃定，让你的温柔有了根。",
+"你学会了「在人群中独处」的能力：你依然热爱联结，但你不再害怕独处；你依然在意他人，但你不再被他人的情绪绑架。你的关系因此变得更加自由而深刻——因为你不再需要靠付出，才能确认自己值得被爱。",
+"你依然是那个太阳，只是如今，你懂得落山、懂得休息、懂得被月亮接住。你照亮了很多人，也终于学会，允许自己被照亮。"],
+quote:"你曾以为爱是把自己给出去，后来你才懂：真正的爱，是把自己爱满，然后让溢出来的部分，自然流向世界。",
+advice:"你已抵达圆满。请继续温暖世界，也请继续被世界温暖。你最大的成就，不是照亮了多少人，而是终于学会了——把自己也放进光里。"}
+};
+TYPE_REPORTS["ENFP"] = {
+"混沌之茧": {t:"你是世界的光，却常把自己活成一阵风", lead:"你那么热烈地爱着世界，可你有没有问过：世界，有没有接住你？", parts:[
+"你是那种自带光芒的人。你的热情有传染性，你的想象能点亮房间，你的存在让平凡的日子都变得值得期待。你能让陌生人变成朋友，让朋友变成家人，你是很多人「想成为」的样子。",
+"可这个阶段的你，正被这份光芒反噬。你的热情来得快去得也快，像一阵风，吹过了很多地方，却很少真正停留；你的可能性太多，多到难以选择；你太在意别人的目光，把自己的形状活丢了。你让所有人感到快乐，自己却在深夜感到一种说不出的空。",
+"你最害怕的，是「停下来」。因为一停下来，那个声音就会问你：你到底在追逐什么？你于是继续热闹、继续乐观、继续向前——可有些路，不是走得快就对的；有些感受，不是笑一笑就能过去的。",
+"你不是不够好，你只是太早就学会了「报喜不报忧」。你的光是真的，你的不安也是真的。而你，值得被看见的，不只是光。"],
+quote:"你把快乐给了所有人，却把不安都留给了自己。今天，我想问你一句：你还好吗？",
+advice:"从今天起，每天留十分钟，关掉所有声音，只和自己待着。把「我很好」暂时放一放，听听看，那个安静的你想说什么。你的光不会因此熄灭，反而会更稳定。"},
+"觉醒之芽": {t:"你开始学会，在奔跑的间隙停下来", lead:"你依然是那个追光的人，但你开始明白：光，也可以为你停留。", parts:[
+"你开始察觉：那些用「哈哈哈」带过的话题，其实是你在意的；那些用「没事」压下的感受，其实一直在。你不再总是第一时间把它笑掉，而是试着多问自己一句：「我真的没事吗？」——这短短一问，是你成长的开始。",
+"这个阶段的你，在练习「坚持」这件小事。你依然会被新事物吸引，但你开始学着回头，把手上这件事做完。你发现，当你把一个项目走到结尾、把一段关系走到深处，那种踏实感，比一百次新鲜感都更让你安心。",
+"你也在学习「面对现实」：账单要还、计划要做、承诺要兑现。你依然讨厌琐碎，但你开始一件一件地处理。你发现，当你不再逃避，现实并没有那么可怕，反而给了你一种「落地」的安全感。",
+"你依然热爱自由，但你已经明白：自由不是逃避责任，而是有能力选择，并愿意承担。"],
+quote:"你曾以为自由是永远在奔跑，后来你才懂：真正的自由，是跑累了，也有地方可以停下来。",
+advice:"选一件你「开了头却没做完」的事，给它一个完成期限，逼自己走完最后一段。你会尝到一种陌生的快感：不是兴奋，是「终于落地」的踏实。"},
+"整合之光": {t:"热情与专注，开始在你身上合流", lead:"你依然是那个发光的人，但你的光，开始有了形状。", parts:[
+"这是一个奇妙的阶段：你的热情不再是一阵风，而成了一股能持续发电的力量。你依然充满好奇、依然热爱新鲜，但你学会了「深耕」——把热爱变成专业，把兴趣变成作品。你开始拥有「完成」的能力，而这份能力，让你的光芒有了重量。",
+"你学会了「情绪的自如」：你依然会大起大落，但你已经懂得在低落时照顾自己，而不是假装没事；你依然渴望认可，但你已经学会先认可自己。你的快乐不再依赖别人的反馈，而是来自内心的笃定。",
+"你的关系开始变得深刻：你不再只是那个「活跃气氛」的人，而是那个「也能接住眼泪」的人。你开始敢于展示真实——包括不安、脆弱和不确定。而你发现，真实的你，比完美的你，更让人愿意靠近。",
+"你依然热爱这个世界，但你已经懂得：爱世界之前，先把自己安顿好。你的光，终于有了可以落下的地方。"],
+quote:"你曾以为发光就是要燃烧自己，后来你才懂：真正的光，是先照亮自己，再照亮世界。",
+advice:"把你最热爱的一件事，认真做到「让人记住」的程度。你会发现，三分钟的热度只是火花，而深耕之后的笃定，才是你真正的光。"},
+"圆融之境": {t:"你成了那个，既热烈又安定的人", lead:"你终于把「一阵风」，活成了「一片海」——既澎湃，又辽阔。", parts:[
+"走到这里的你，完成了人格里最动人的整合：你的热情有了方向，你的自由有了根基，你的乐观有了厚度。你依然是那个能点亮房间的人，但你已经懂得：真正的光，不是瞬间的灿烂，而是持续的温暖。",
+"你学会了一种高级的平衡：既能尽情地拥抱世界，也能安然地回到自己；既能享受人群的热闹，也能安住独处的寂静。你不再需要靠「被喜欢」来确认存在，因为你终于确认：你本身就值得。",
+"你的创造力开始真正绽放：你不再只是「有想法」的人，而是「能实现」的人。你的作品、你的关系、你的人生，都开始有了一种沉甸甸的质感——因为每一个「完成」的背后，都有你真实的投入。",
+"你依然是那个追光的人，只是如今，你终于明白：你追了那么久的光，其实一直在你心里。而你，就是光本身。"],
+quote:"你曾以为自己是一阵风，后来才发现：你是一片海——既能掀起浪花，也能托住远航的船。",
+advice:"你已抵达圆满。请继续热烈地爱这个世界，也请继续温柔地爱自己。你最大的成就，不是让多少人快乐，而是终于让那个追逐光的自己，住进了光里。"}
+};
+TYPE_REPORTS["ISTJ"] = {
+"混沌之茧": {t:"你可靠得像一座山，可山，也会累", lead:"所有人都可以依靠你，可你，又靠在谁身上？", parts:[
+"你是那种让人安心的人。你说到做到，从不食言；你把事情交给你，就一定能看到结果；你是家人眼里的顶梁柱，是朋友口中「最靠谱的人」。这个世界能正常运转，有一部分，是靠你这样的人撑着的。",
+"可这个阶段的你，正在为这份可靠付出代价。你习惯了把情绪藏起来，因为「说了也没用」；你习惯了把责任扛起来，因为「别人靠不住」；你习惯了把自己排在最后，因为「大家的事更重要」。你活成了一座山，可山，也会风化。",
+"你最不擅长的，是「表达」。你心里有爱、有委屈、有疲惫，但你说不出口。你以为不说，别人也懂；你以为扛住，就是坚强。可你不知道，那些没说出口的话，那些没流出的泪，都积压在你心里，一点点变成你的重量。",
+"你不是不需要被照顾，你只是太早学会了「自己扛」。而我想告诉你：你可以累，可以示弱，可以被人接住——那不是失职，那是你作为一个人，应有的权利。"],
+quote:"你总是最后一个被想起要照顾的人，因为你看起来，最不需要。可我知道，你也想被人问一句：累不累？",
+advice:"从今天起，每周至少一次，把「我累了」说出口——对家人、对朋友、甚至对自己说。你会发现，承认疲惫不会让你失职，反而让你第一次感到，被世界轻轻接住了。"},
+"觉醒之芽": {t:"你开始允许自己，不只是「有用」", lead:"你依然是那个可靠的人，但你已经懂得：你存在的价值，不只是「被需要」。", parts:[
+"你开始察觉：当你说「没事」的时候，其实有事；当你又一次把委屈咽下去的时候，心里那个声音其实在说「我也想要被在乎」。看见这些，不是你变脆弱了，而是你开始诚实。",
+"这个阶段的你，在练习「表达」：练习把「我累了」说出口，练习把「我想要」说清楚，练习在生气时说「我不高兴」。你依然笨拙，说完还会后悔「是不是不该说」，但你已经迈出了那一步——而你发现，世界并没有因为你表达，就对你不好。",
+"你也在学着「放下一点」：试着把一些事交给别人，试着允许自己休息，试着不再为每一个细节负责。你发现，天没有塌，事情也还是完成了——而且你第一次觉得，肩膀轻了一点。",
+"你依然可靠，但你的可靠不再以「牺牲自己」为代价。你开始明白：真正的可靠，是能照顾别人，也能照顾自己。"],
+quote:"你不是冷，你只是把温度都藏在了行动里。而现在，你开始学会，把它说出来了。",
+advice:"本周做一件「不像你」的事：主动跟一个你在乎的人说「我今天有点累，想听听你的声音」。你会发现，你的示弱，会换来意想不到的温暖。"},
+"整合之光": {t:"沉默的深情，开始被你亲口说出", lead:"你依然是那个行动派，但你已经学会：爱，也需要被听见。", parts:[
+"这是一个珍贵的阶段：你依然是那个靠谱的人，但你的靠谱不再等于「沉默扛下一切」。你学会了在做事的同时，也把感受说出来——「我帮你是因为我在乎你」「我担心你」「我也有点累」。你发现，当你说出口，你的付出才真正被看见，你的关系才真正被点亮。",
+"你学会了「温柔地拒绝」：你可以说「这个我帮不了」，而不内疚；你可以说「我需要休息」，而不自责。你不再用「硬扛」证明价值，而是用「诚实」赢得尊重。你的边界开始清晰，而你的关系，反而因此更健康了。",
+"你开始允许自己「想要」：想要喜欢的东西，想要休息的时间，想要被照顾的瞬间。你发现，当你开始满足自己，你反而更有能量去照顾别人——因为你不是在「掏空」自己，而是在「溢出」爱。",
+"你依然是那座山，但如今，山上开始有花开了。你不再是「坚硬」的，而是「稳固」的——稳固到可以承载自己，也承载别人。"],
+quote:"你花了很久才学会：真正的可靠，不是从不喊累，而是累的时候，也敢说出口。",
+advice:"把「表达」变成你的新习惯：每周至少一次，把心里的话说出来——一句「我想你」、一句「谢谢你」、一句「我今天过得很辛苦」。让爱你的人，有机会接住你。"},
+"圆融之境": {t:"你成了那个，既坚实又温柔的人", lead:"你把「可靠」活成了「深爱」——不动声色，却一直在。", parts:[
+"走到这里的你，完成了人格里最深的整合：你的责任感有了温度，你的可靠有了弹性，你的沉默有了表达。你依然是那个让人安心的存在，但你已经懂得：真正的强大，不是从不倒下，而是倒下了，也允许有人扶你。",
+"你拥有了一种「沉稳的温柔」：你依然少言，但你说出的每句话都有分量；你依然务实，但你的务实里开始有了浪漫；你依然把事做好，但你已经学会，在做好的同时，也把爱说出口。你身边的人开始真正「感觉到」你的爱——因为你不只做了，也说了。",
+"你学会了「被照顾的艺术」：允许别人为你付出，允许自己享受被爱，允许自己不是永远「有用」。你发现，当你愿意被接住，你和世界之间，才真正完成了「联结」。",
+"你依然是那座山，但如今，山上有树、有花、有鸟鸣。你不再只是一座「可靠」的山，而是一座「有人间烟火」的山——而这座山，终于有人愿意为你停留。"],
+quote:"你用了很多年才学会：爱一个人，不只是为她扛起一切，也是让她知道，你也会累，也需要她。",
+advice:"你已抵达圆满。请继续做那个可靠而温柔的人，也请记得：你的肩膀可以借给别人靠，但你的心，也要记得偶尔靠在别人身上。"}
+};
+TYPE_REPORTS["ISFJ"] = {
+"混沌之茧": {t:"你守护了所有人的四季，却让自己活在冬天", lead:"你是最温柔的守护者，可你守护的名单里，唯独没有你自己。", parts:[
+"你是那种让人安心的存在。你记得每个人的口味，操心每一件小事，你总在别人开口前，就把一切安排妥当。你是家人离不开的依靠，是朋友心中「最温暖的那个人」。世界的美好，有一半，是靠你这样默默守护的人撑起来的。",
+"可这个阶段的你，正在把自己一点一点掏空。你把所有人的需求放在前面，把自己的放在最后；你把「没关系」说成了习惯，把委屈咽成了日常；你照顾了所有人的情绪，却忘了问自己：你今天，开心吗？",
+"你最不擅长的，是「为自己」。你不会为自己争取，不敢为自己发声，甚至不好意思为自己花一点钱、要一点爱。你总觉得自己「还不够好」，可你不知道——在你照顾别人的那些时刻里，你早已闪闪发光。",
+"你不是不需要被爱，你只是太习惯「付出」了，习惯到忘了自己也值得。而我想告诉你：你守护了那么多人，现在，换我们来守护你，好吗？"],
+quote:"你总是把最好的给别人，把将就留给自己。可你知道吗？你，也值得这世间最好的。",
+advice:"从今天起，每天做一件「取悦自己」的小事：买一束喜欢的花、吃一顿想吃的、把「我想」说出口。你不是自私，你只是开始，把自己也放进「值得被爱」的名单里。"},
+"觉醒之芽": {t:"你开始学习，把自己也列入守护名单", lead:"你依然是那个温柔的人，但你已经懂得：守护自己，也是守护的一部分。", parts:[
+"你开始察觉：当你说「我没事」的时候，其实有事；当你又一次把委屈咽下去的时候，心里那个声音其实在说「我也想被在乎」。看见这些，不是你变脆弱了，而是你开始「诚实」——而诚实，是爱自己的第一步。",
+"这个阶段的你，在练习「说出口」：练习说「我不舒服」，练习说「我需要帮忙」，练习说「我不想这样」。你依然会内疚，依然会在说完后反复想「是不是太麻烦别人了」，但你已经迈出了那一步——而你发现，爱你的人，并没有觉得你麻烦，反而更靠近你了。",
+"你也在学着「接受」：接受别人的好，接受「我值得」，接受「我不必完美」。你开始允许自己休息，允许自己拒绝，允许自己把「我」放在「别人」前面一次。你发现，天没有塌，而你第一次觉得，心里轻松了一些。",
+"你依然是那个守护者，但你已经懂得：只有先守住自己，你才有能量，去守护你爱的人。"],
+quote:"你不是自私，你只是终于明白：一个空杯子的温柔，倒不出第二杯。",
+advice:"本周练习一次「被照顾」：让家人帮你做一件事、让朋友听你吐槽一次、让自己睡一个没有闹钟的午觉。你会发现，被爱的感觉，并不比付出更差。"},
+"整合之光": {t:"你的温柔，开始有边界，也有回响", lead:"你依然是那个守护者，但你已经学会了：爱，是相互的。", parts:[
+"这是一个珍贵的阶段：你的付出不再是一味地「给」，而是开始「有来有往」。你依然细心体贴，但你学会了先问自己「我愿意吗」「我累吗」；你依然乐于照顾人，但你学会了「可以照顾，也可以被照顾」。",
+"你学会了「理直气壮地对自己好」：你买喜欢的东西不再愧疚，你休息不再自责，你说「我需要」不再脸红。你发现，当你开始爱自己，你身边的人反而更尊重你、更珍惜你——因为你不再是那个「永远免费」的人，而是一个「值得被爱」的人。",
+"你的关系开始变得平衡而温暖：你依然付出，但你也坦然接受；你依然牵挂，但你不再把担心变成控制。你学会了「信任别人可以照顾好自己」，也学会了「让别人有机会爱你」。",
+"你依然是那个温柔的守护者，但如今，你的温柔里有了力量，你的守护里有了自己。"],
+quote:"你花了很久才学会：真正的温柔，不是委屈自己成全别人，而是爱自己的同时，也温暖别人。",
+advice:"把你自己的名字，写进「最想守护的人」的第一位。以后每次想为别人付出之前，先问自己：「我把自己照顾好了吗？」——你给的温柔，会因为你先爱自己而更有力量。"},
+"圆融之境": {t:"你成了那个，被世界温柔以待的守护者", lead:"你终于明白：守护者的最高境界，是让自己也被守护。", parts:[
+"走到这里的你，完成了人格里最深的整合：你的付出有了回响，你的温柔有了边界，你的守护有了自己。你依然是那个让人安心的人，但你已经懂得：真正的圆满，不是「被需要」，而是「被爱」。",
+"你拥有了一种「笃定的温柔」：你依然细心地记得每个人的喜好，但你不再用它来讨好，而是用它来表达爱；你依然乐于付出，但你的付出不再消耗自己，因为你已经学会了「先满再溢」。",
+"你学会了「接受被爱」的艺术：允许别人为你操心，允许自己依赖，允许自己不是永远坚强。你发现，当你愿意被接住，你反而成了更完整的守护者——因为你终于知道，被爱的滋味，才能让你把爱给得更纯粹。",
+"你依然是那个温暖的守夜人，但如今，你的灯下，终于有了为自己留的位置。你守护的世界，终于把你，也守护了进去。"],
+quote:"你用了很久才学会：最好的守护，不是燃烧自己，而是让自己也成为被守护的人。",
+advice:"你已抵达圆满。请继续温柔，也请继续被温柔以待。你不再只是别人的依靠，而是自己的光——这，是你送给自己最好的礼物。"}
+};
+TYPE_REPORTS["ESTJ"] = {
+"混沌之茧": {t:"你把世界管得井井有条，却把自己活得兵荒马乱", lead:"你是秩序的守护者，可你有没有问过：你心里的秩序，还好吗？", parts:[
+"你是那种让世界正常运转的人。你守时、负责、有章法，你把混乱变成秩序，把「差不多」变成「标准」。你是团队的主心骨，是家里拿主意的人。这个世界需要你这样的人——因为总得有人，把事办成。",
+"可这个阶段的你，正在为这份「靠谱」付出代价。你把所有事都扛在肩上，把所有人安排得明明白白，却很少安排自己休息；你用「对错」衡量一切，包括自己，于是你总在「纠错」，总觉得自己「还不够好」。",
+"你最不擅长的，是「柔软」。你不会说「我累了」，觉得那是示弱；你不会说「我需要你」，觉得那是无能；你的关心都包装成「说教」，你的爱都藏在「规矩」里。你让所有人知道你「可靠」，却很少有人知道你「也会疼」。",
+"你不是不需要被爱，你只是太习惯「撑」了。而我想告诉你：你可以不是那个永远正确、永远坚强的人。你可以犯错，可以喊累，可以被接住——那不会让你「失职」，只会让你更像一个「活人」。"],
+quote:"你总在检查所有人的作业，却从没检查过自己：你，累不累？",
+advice:"从今天起，每天给自己安排一次「无目的休息」：不设闹钟地睡、不做计划地走、不接电话地发呆。你会发现，世界不会因为你休息而崩塌，而你紧绷的神经，第一次有了松开的缝隙。"},
+"觉醒之芽": {t:"你开始学会，把「人」放回你的公式里", lead:"你依然是那个管理者，但你开始管理的不只是事，还有心。", parts:[
+"你开始察觉：当你又一次用「应该」去要求别人的时候，对方眼里的那一点黯淡；当你把「效率」放在「感受」前面的时候，自己心里那一点不安。看见这些，不是你变弱了，而是你开始「完整」了。",
+"这个阶段的你，在练习「软下来」：练习先听，再说；先问「你怎么想」，再给结论；先承认「我也不确定」，再谈方案。你依然觉得「绕」，但你开始发现——当你说「你觉得呢」的时候，事情并没有变糟，关系却变好了。",
+"你也在学着「放过自己」：允许自己有一次「不达标」，允许计划出现「意外」，允许自己在某个晚上承认「我今天很累」。你发现，那些「允许」，没有让你失职，反而让你第一次觉得「活着」——而不是「运转」。",
+"你依然是那个管理者，但你已经明白：最好的管理，不是让人怕你，而是让人愿意跟你。而愿意，来自「被看见」，而不是「被考核」。"],
+quote:"你赢了那么多场「对错」，可有些仗，赢了道理，会输了人心。",
+advice:"本周挑一位你在乎的人，做三件「不讲效率」的事：认真听ta说完一件事、说一次「你辛苦了」、主动问一次「你最近开心吗」。你会发现，这些「无用」的时刻，正在悄悄改变你人生的质地。"},
+"整合之光": {t:"秩序与温度，开始在你身上和解", lead:"你依然是那个主心骨，但你开始懂得：带人，先带心。", parts:[
+"这是一个了不起的阶段：你依然有条不紊、执行力惊人，但你的「标准」里开始有了「人情」。你依然要求结果，但你已经学会在过程里看见人；你依然坚持原则，但你已经懂得在原则之外，留出「体谅」的空间。",
+"你学会了「温柔的坚定」：你可以坚持立场，而不伤害关系；你可以指出问题，而不否定人格；你可以要求标准，而同时说「我知道你尽力了」。你发现，当你开始「看见人」，你的要求反而更容易被接受——因为人们愿意为一个「懂他们」的人全力以赴。",
+"你也在学着「被照顾」：允许家人为你操心，允许自己喊累，允许自己在某些时刻不是「主心骨」。你发现，当你不再「全扛」，身边的人反而更靠近你——因为他们终于有机会，为你做点什么。",
+"你依然是那个让世界正常运转的人，但如今，你运转的不只是事，还有爱。你的秩序，终于有了温度。"],
+quote:"真正的领导力，不是让所有人服从你的标准，而是让所有人愿意，为你成为更好的自己。",
+advice:"把「关心」加入你的管理日程：每周一次，不谈工作地陪家人吃顿饭；每月一次，主动问一位朋友「你最近怎么样」。你会发现，这些「低效」的投入，回报远超你的想象。"},
+"圆融之境": {t:"你成了那个，既撑得起场面，也暖得了人心的人", lead:"你把「管理」活成了「成全」——这是秩序的最高境界。", parts:[
+"走到这里的你，完成了人格里最深的整合：你的果决里有了慈悲，你的标准里有了人情，你的秩序里有了爱。你依然是那个让一切井井有条的人，但你已经懂得：真正的秩序，不是控制一切，而是让每个人都在其中找到自己的位置。",
+"你拥有了一种「笃定的松弛」：你依然追求结果，但你已经不再用结果衡量自己；你依然负责，但你学会了「该扛的扛，该放的放」；你依然有标准，但你学会了在标准之外，欣赏「不一样」的美好。",
+"你学会了「被爱」的艺术：允许自己依赖，允许自己示弱，允许自己不是永远正确。你发现，当你不再「全知全能」，你反而成了更可信的人——因为真实，比完美更有力量。",
+"你依然是那个主心骨，但如今，你撑起的不只是一个「系统」，而是一个「家」。而你终于明白：你守护的这一切，也正在守护着你。"],
+quote:"你用了很久才学会：最好的秩序，是让每个人都被看见；最好的管理，是让每个人都被爱。",
+advice:"你已抵达圆满。请继续做那个撑得起场面的人，也请记得：把心留给家人，把软肋留给爱你的人，把自己，留给自己。"}
+};
+TYPE_REPORTS["ESFJ"] = {
+"混沌之茧": {t:"你温暖了每个人的聚会，却让自己独自散场", lead:"你是人群里的阳光，可阳光，也需要有地方歇一歇。", parts:[
+"你是那种自带温度的人。你记得每个人的生日，张罗每一次聚会，你能让陌生的圈子热起来，让冷掉的场子暖回来。你是朋友之间的粘合剂，是家人心里的主心骨。和你在一起，没人会感到被冷落——因为你总会照顾到每一个人。",
+"可这个阶段的你，正在被这份温度反噬。你把所有人的感受放在心里，却常常漏掉自己；你为了让每个人开心，把自己的委屈咽下去；你习惯了「被需要」，却忘了问自己：我，需要什么？",
+"你最害怕的，是「被讨厌」。所以你不断调整自己，去适配别人的期待；你努力表现得完美，怕让任何人失望。可你不知道——当你活成「大家想要的样子」，你也就失去了「被真正爱着」的可能。因为别人爱的，是那个「完美」的你，而不是真实的你。",
+"你不是不够好，你只是太早学会了「看人脸色」。而我想告诉你：真实的你，已经足够值得被爱。你不用讨好，不用完美，你只要做你自己——就有人会爱你。"],
+quote:"你照顾了所有人的情绪，却把自己的情绪，藏在了最深的地方。今天，我想替所有被你温暖过的人问你：你，还好吗？",
+advice:"从今天起，每天问自己一次：「这件事，我是真的愿意，还是怕被讨厌？」如果是后者，试着说一次「我不想」。你会发现，世界不会因此讨厌你，反而会更尊重你。"},
+"觉醒之芽": {t:"你开始练习，把自己也放进「被照顾」的名单", lead:"你依然是那个温暖的人，但你开始允许自己，也被温暖。", parts:[
+"你开始察觉：当你说「我没事」的时候，其实有事；当你又一次把「没关系」说出口的时候，心里那个声音其实在说「我在乎」。看见这些，不是你变脆弱了，而是你开始「诚实」——而诚实，是真正的勇敢。",
+"这个阶段的你，在练习「说真话」：练习说「我不开心」，练习说「我需要你」，练习说「我不想帮忙」。你依然会内疚，依然会在说完后反复想「是不是扫兴了」，但你已经迈出了那一步——而你发现，真正在乎你的人，并没有离开，反而更靠近你了。",
+"你也在学着「独处」：试着一个人吃饭、一个人散步、一个人待一个下午。你发现，独处并没有想象中可怕，反而让你第一次听见了自己的声音——那个被「大家」淹没太久的声音。",
+"你依然是那个粘合剂，但你已经懂得：只有先把自己粘好，你才有能量，去粘合别人。"],
+quote:"你不是不够好，你只是把「被喜欢」当成了「被爱」，把「付出」当成了「价值」。",
+advice:"本周做一次「自我约会」：一个人去看一场电影、吃一顿喜欢的饭、逛一次街，全程只为自己。你会发现，和自己相处，也是一种被爱。"},
+"整合之光": {t:"你的温暖，开始有了边界，也有了回响", lead:"你依然是那个人群里的太阳，但你学会了：先温暖自己，再温暖世界。", parts:[
+"这是一个珍贵的阶段：你的付出不再是一味地「给」，而是开始「有来有往」。你依然细心体贴，但你学会了先问自己「我愿意吗」「我累吗」；你依然乐于张罗，但你学会了「可以照顾别人，也可以让别人照顾你」。",
+"你学会了「不被喜欢也OK」的底气：你不再为每一个人的看法焦虑，不再为一句冷淡的话失眠。你开始明白：你不可能让所有人满意，而你也不需要。你只需要，让真正重要的人，和真正重要的自己，满意。",
+"你的关系开始变得真实而温暖：你不再只是「那个活跃气氛的人」，而是「那个也会说累的人」。你发现，当你敢于展示真实，那些真正爱你的人反而更靠近你——因为他们爱的，是真实的你，而不是完美的你。",
+"你依然是那个粘合剂，但如今，你的粘合不再以「消耗自己」为代价。你的温暖，终于有了可以回流的地方。"],
+quote:"你花了很久才学会：真正的温暖，不是燃烧自己照亮别人，而是先让自己亮起来，再自然地分享光。",
+advice:"把你自己的名字，写在「最想照顾的人」的第一位。以后每次想为别人付出之前，先问自己：「我今天，把自己照顾好了吗？」——你给的温暖，会因为你先被温暖而更有力量。"},
+"圆融之境": {t:"你成了那个，既温暖又有自己形状的人", lead:"你终于明白：真正的圆满，不是被所有人喜欢，而是被真正懂你的人爱着。", parts:[
+"走到这里的你，完成了人格里最深的整合：你的付出有了回响，你的温暖有了边界，你的存在有了自己。你依然是那个让人安心的人，但你已经懂得：你不需要成为所有人的太阳，你只需要，成为你自己的光。",
+"你拥有了一种「从容的温暖」：你依然记得每个人的喜好，但你的记得不再是讨好，而是发自内心的在乎；你依然乐于照顾别人，但你学会了「先照顾自己」。你身边的人说，你变了——变得更好相处了，因为你不再「用力」，而是「自然」。",
+"你学会了「被爱」的勇气：允许自己依赖，允许自己说累，允许自己不是永远坚强。你发现，当你不再「全扛」，那些爱你的人终于有机会靠近你——而你终于尝到，被接住的滋味。",
+"你依然是那个粘合剂，但如今，你不再把自己「粘」在别人身上。你是一个完整的圆——而两个完整的圆相遇，才叫相爱，不叫依附。"],
+quote:"你用了很久才学会：真正的爱，不是让所有人都喜欢你，而是让懂你的人，爱你真实的模样。",
+advice:"你已抵达圆满。请继续温暖世界，也请继续被世界温暖。你不再需要活成「大家想要的样子」——因为你终于知道，你本来的样子，就很好。"}
+};
+TYPE_REPORTS["ISTP"] = {
+"混沌之茧": {t:"你拆得开世上所有的机器，却拆不开自己的心", lead:"你是那个最冷静的人，可冷静久了，你会不会也忘了，自己也会疼？", parts:[
+"你是那种让人「放心」的人。你动手能力强，遇事不慌，天塌下来你也能先找到工具。你不爱说漂亮话，但你能把事办漂亮；你不热衷社交，但关键时刻，你是最靠得住的那个人。你的冷静，是你的铠甲，也是你的天赋。",
+"可这个阶段的你，正在被这份冷静反噬。你习惯了用「行动」代替「表达」，用「沉默」代替「沟通」；你把情绪当成「麻烦」，把脆弱当成「软弱」。你拆得开世上所有的机器，却拆不开自己的心——因为那颗心，被你锁得太久了。",
+"你最不擅长的，是「留下来」：留在一段关系里，留在一件事的结尾，留在一种感受里。你总在「下一个」里找新鲜，在「自由」里躲责任。可你不知道——真正的自由，不是永远在逃，而是有一天，你愿意停下来，而你知道自己可以留下。",
+"你不是冷血，你只是还没学会「把心拿出来」——怕拿出来会坏，会被人看见裂痕。可我想告诉你：你的心，比你以为的，坚强得多。"],
+quote:"你总是一个人扛下所有，扛到你身边的人以为你什么都不需要。可我知道，你也想有人，问你一句：你还好吗？",
+advice:"从今天起，每周做一次「表达练习」：对一个人说一句「谢谢你」「我在乎你」或「我今天心情不好」。你会发现，说出心里话，不会让你变弱，反而会让你第一次感到「被看见」。"},
+"觉醒之芽": {t:"你开始尝试，把心里的门打开一条缝", lead:"你依然是那个冷静的人，但你开始允许自己，也有温度。", parts:[
+"你开始察觉：当你说「没事」的时候，其实有事；当你又一次躲进「忙碌」的时候，心里那个声音其实在说「我也想要有人懂」。看见这些，不是你变弱了，而是你开始「打开」——而打开，是改变的第一步。",
+"这个阶段的你，在练习「留下来」：留在一件事的结尾，把它做完；留在一段关系里，不急着走；留在一种感受里，不急着转移。你发现，当你不再「逃」，你反而获得了一种全新的体验——「完成」的踏实，「联结」的温暖。",
+"你也在学着「说出口」：说出「我需要你」，说出「我有点难过」，说出「我很在乎你」。你依然别扭，说完还会脸红，但你已经迈出了那一步——而你发现，当你开始表达，你身边的人终于知道怎么靠近你了。",
+"你依然是那个独狼，但你已经明白：真正的独立，不是不需要任何人，而是需要的时候，也敢开口。"],
+quote:"你把心关得太久，久到你以为自己不需要爱。可你知道吗？门开一条缝，光就能进来。",
+advice:"挑一个你信任的人，主动说一次「我最近有点累，想跟你聊聊」。你会发现，你的「示弱」，会换来前所未有的靠近——而那份靠近，值得你冒一次险。"},
+"整合之光": {t:"冷静与温柔，开始在你身上共存", lead:"你依然是那个靠谱的人，但你开始懂得：真正的强大，是既能动手，也能动心。", parts:[
+"这是一个珍贵的阶段：你的冷静依然可靠，但你的沉默里开始有了温度。你依然是那个「少说话多做事」的人，但你开始学会——在做事的同时，也说一句「我在乎你」「你辛苦了」。你发现，当你开始表达，你的付出才真正被看见，你的关系才真正被点亮。",
+"你学会了「定下来」的勇气：把一件事做完，把一段关系处深，把一种技能练精。你发现，深入带来的满足，远比「新鲜」来得持久——就像你终于把那台修了一半的机器，修到了「完美运转」。",
+"你也在学着「被照顾」：允许别人为你操心，允许自己依赖，允许自己不是永远「没问题」。你发现，当你不再「全扛」，你反而更有力量——因为你知道，身后有人。",
+"你依然是那个独狼，但如今，你学会了「群居」：你依然享受独处，但你不再害怕联结。你的世界，终于不只是「一个人」，而是「一个人，也可以有很多人」。"],
+quote:"你用了很久才学会：真正的自由，不是不需要任何人，而是需要的时候，知道自己有地方可以回。",
+advice:"把「表达」变成你的新技能：每周至少一次，把心里的感受说出口。你会发现，这项技能，比你会修的任何一个机器，都更能改变你的人生。"},
+"圆融之境": {t:"你成了那个，既冷静又深情的人", lead:"你把「不表达」活成了「深爱」——你终于知道，爱，也需要被听见。", parts:[
+"走到这里的你，完成了人格里最深的整合：你的冷静里有了温度，你的独立里有了联结，你的沉默里有了深情。你依然是那个「遇事不慌」的人，但你已经懂得：真正的强大，是既能解决问题，也能接住眼泪。",
+"你拥有了一种「笃定的温柔」：你依然话不多，但你说出的每句话都有分量；你依然喜欢独处，但你已经不再用它逃避关系；你依然冷静，但你的冷静里，开始有了「心疼别人」的柔软。",
+"你学会了「爱」的表达：你不再只是「修好」对方的东西，而是开始「修好」对方的心情；你不再只是「在」，而是开始「说我在」。你发现，当你愿意把心拿出来，你收获的，是前所未有的亲密。",
+"你依然是那个鉴赏家，但如今，你最擅长的「鉴赏」，是欣赏生活里的每一份温柔——包括别人给你的，也包括你给自己的。"],
+quote:"你用了很久才学会：真正的强大，不是不需要爱，而是敢爱，也敢被爱。",
+advice:"你已抵达圆满。请继续做那个冷静而温柔的人，也请记得：你的心门，值得为懂你的人敞开——而你自己，也值得被好好爱着。"}
+};
+TYPE_REPORTS["ISFP"] = {
+"混沌之茧": {t:"你用热爱拥抱了世界，却把自己藏在了画框后面", lead:"你是那个最懂美的人，可你，有没有认真看过自己？", parts:[
+"你是那种自带灵气的人。你对美有天生的直觉，一首歌、一抹颜色、一个瞬间，都能让你心动。你不爱说话，但你的作品会说话；你存在感不高，但懂你的人都知道，你心里装着一整个丰富的世界。",
+"可这个阶段的你，正把自己藏得太深。你怕被评价，所以不敢发声；你怕受伤，所以不敢投入；你总觉得自己「不够好」，所以不敢争取。你把自己活成了「画框后面的人」——你的作品被看见，你却被忽略了。",
+"你最不擅长的，是「坚持」和「面对」：你很容易开始，也很容易放弃；你很容易心动，也很容易逃跑。你用「随性」保护自己，用「低调」躲避风险——可你不知道，那些被你躲开的，正是你渴望的。",
+"你不是没有光芒，你只是太早学会了「藏」。而我想告诉你：你的敏感不是弱点，你的温柔不是懦弱，你的才华值得被看见——包括被你自己看见。"],
+quote:"你把所有的美都给了世界，却忘了把自己，也放进这幅画里。",
+advice:"从今天起，每天做一件「为自己发声」的小事：发一条你真实想法的动态、对一个人说「我喜欢这个」、把「我觉得」说出口。你会发现，你的声音，值得被听见。"},
+"觉醒之芽": {t:"你开始尝试，把自己的名字签在作品上", lead:"你依然是那个安静的人，但你开始允许自己，也被看见。", parts:[
+"你开始察觉：当你又一次说「都可以」的时候，心里其实有答案；当你又一次把想法咽回去的时候，那个声音其实在说「我想说出来」。看见这些，不是你变强了，而是你开始「愿意」——愿意让自己，被看见。",
+"这个阶段的你，在练习「坚持」：把一幅画画完，把一个项目做完，把一段关系处深。你发现，当你不再「三分钟热度」，你收获的满足感，远比「新鲜感」更踏实——就像你终于把那幅画，画到了最后一笔。",
+"你也在学着「直面」：直面冲突，把「我不高兴」说出口；直面选择，为自己的决定负责；直面未来，不再用「随性」逃避。你发现，当你不再「躲」，你反而获得了自由——真正的自由。",
+"你依然是那个敏感的艺术家，但你开始学会：敏感是用来感受世界的，不是用来伤害自己的。"],
+quote:"你曾以为藏起来就安全，后来你才懂：真正的安全，是敢于被看见，然后发现，你依然被爱。",
+advice:"本周把你的一个作品「公开发表」：发到朋友圈、寄给朋友、或者挂在家里最显眼的地方。让你的才华，第一次在阳光下呼吸。"},
+"整合之光": {t:"敏感，开始成为你创作的力量", lead:"你依然是那个安静的人，但你的安静里，开始有了笃定。", parts:[
+"这是一个珍贵的阶段：你的敏感不再消耗你，而成了一种天赋。你依然能敏锐地感受世界，但你已经学会了「筛选」——哪些感受值得收藏，哪些情绪可以放下。你的作品开始有了一种「笃定」的质感，因为你不再害怕被评价，而是开始相信自己的眼光。",
+"你学会了「为自己争取」：你可以说出「我想要」，而不脸红；你可以坚持「我喜欢」，而不动摇；你可以接受「批评」，而不否定自己。你发现，当你不再「怕」，你的世界反而开阔了——因为你终于开始，为自己而活。",
+"你的关系开始变得真实：你不再用「随和」讨好，而是用「真诚」交流；你不再「消失」在矛盾里，而是学着留下来面对。你发现，当你不再「逃」，那些真正爱你的人，终于能走近你。",
+"你依然是那个艺术家，但如今，你的画里终于有了「自己」——你的热爱、你的坚持、你的名字。"],
+quote:"你曾以为自己的敏感是软肋，后来你才懂：那是你与世界对话的方式，也是你创作的力量。",
+advice:"把你最满意的一件作品，「签上自己的名字」。这不是炫耀，而是你对自己说：我值得，被看见。"},
+"圆融之境": {t:"你成了那个，既自由又坚定的艺术家", lead:"你终于明白：真正的自由，不是逃避一切，而是选择留下，并为之负责。", parts:[
+"走到这里的你，完成了人格里最深的整合：你的敏感有了力量，你的自由有了方向，你的温柔有了边界。你依然是那个用感官热爱世界的人，但你已经懂得：真正的热爱，不是三分钟的心动，而是长久的守护。",
+"你拥有了一种「安稳的灵动」：你依然随性，但你的随性不再伤害自己和他人；你依然敏感，但你的敏感不再让你受伤；你依然低调，但你已经敢于在重要的时候，站出来。你的作品、你的生活、你的关系，都开始有了一种「从容」的质感。",
+"你学会了「深入」的勇气：把一件事做到极致，把一段关系处到深处，把一种生活过到热爱。你发现，深入之后的世界，比你想象的更辽阔——就像你终于发现，那幅画里，藏着你自己。",
+"你依然是那个探险家，但如今，你探险的不再是「远方」，而是「内心」——而你发现，最值得探索的风景，一直都在你心里。"],
+quote:"你用了很久才学会：真正的自由，不是永远在路上，而是有一天，你选择留下，并且知道自己为什么留下。",
+advice:"你已抵达圆满。请继续用你的方式热爱世界，也请继续被世界热爱。你的名字，值得被记住；你的作品，值得被珍藏——包括你自己。"}
+};
+TYPE_REPORTS["ESTP"] = {
+"混沌之茧": {t:"你活成了所有人的热闹，却把自己的心，落在了身后", lead:"你是那个永远在「行动」的人，可你有没有问过自己：你在跑向哪里？", parts:[
+"你是那种自带能量的人。你反应快、胆子大、敢说敢做，你是人群里的气氛担当，是「说走就走」的发起人。你的人生是「进行时」，你永远在体验、在尝试、在冲锋。跟你在一起，永远不会无聊。",
+"可这个阶段的你，正在为这份「快」付出代价。你太快，快到来不及感受自己的情绪；你太满，满到没时间面对自己的内心；你太热闹，热闹到独处时就发慌。你跑得太快，快到你身边的人追不上，你自己的心，也没跟上。",
+"你最害怕的，是「停下来」。因为一停下来，你就要面对那个问题：我到底在追求什么？你于是继续奔跑、继续热闹、继续用「刺激」填满自己——可有些空洞，是「刺激」填不满的。",
+"你不是不需要深度，你只是还没学会「慢下来」——慢到能听见自己的心跳，慢到能让一个人走进来。而我想告诉你：那个「慢」的世界，并不无聊，它藏着你这辈子最需要的礼物。"],
+quote:"你总在赶下一场热闹，却忘了问自己：这场热闹之后，你，还开心吗？",
+advice:"从今天起，每周留一小时「慢时间」：不约人、不刷手机、不做计划，就一个人待着。你会发现，慢下来不会让你「错过」，反而会让你「遇见」——遇见那个被你落在身后的自己。"},
+"觉醒之芽": {t:"你开始学会，在奔跑的路上回头看看", lead:"你依然是那个行动派，但你开始明白：有些路，走得慢，才算走过。", parts:[
+"你开始察觉：当你说「没事」的时候，其实有事；当你又一次用「忙」躲开一个话题的时候，心里那个声音其实在说「我想聊聊」。看见这些，不是你变弱了，而是你开始「慢」——而慢下来，是你第一次真正「看见」自己。",
+"这个阶段的你，在练习「停下来」：把一件事做完，不再半途而废；把一段话说完整，不再用玩笑带过；把一个人放在心上，不再「来去如风」。你发现，当你不再「逃」，你反而体验到了以前从没有过的「踏实」。",
+"你也在学着「面对」：面对自己的情绪，不再用「刺激」压住它；面对关系的矛盾，不再用「消失」处理它；面对未来的不确定，不再用「走一步看一步」糊弄它。你发现，当你开始「面对」，你反而获得了真正的自由。",
+"你依然是那个冒险家，但你已经明白：真正的冒险，不是逃避一切，而是敢于面对一切。"],
+quote:"你跑得太快，快到你以为是自由。可真正的自由，是你敢停下来，而你知道，自己随时可以再出发。",
+advice:"选一个你「半途而废」的事，把它做完；选一段你「浅尝辄止」的关系，试着深入一次。你会发现，「完成」和「深入」带来的满足，比一百场热闹都更让你安心。"},
+"整合之光": {t:"行动与深度，开始在你身上合流", lead:"你依然是那个雷厉风行的人，但你已经学会：真正的力量，是既能冲锋，也能停留。", parts:[
+"这是一个了不起的阶段：你的行动力依然惊人，但你已经学会了「先想再做」——不是犹豫，而是校准方向；你的热情依然高涨，但你已经学会了「持续」——不是三分钟，而是长期主义。你开始拥有「把事做成」的能力，而不只是「把事开始」的能力。",
+"你学会了「深度的连接」：你可以坐下来，认真听一个人说话；你可以承认「我也怕」，而不觉得丢脸；你可以在一段关系里「停留」，而不急着逃离。你发现，当你不再「躲」，那些真正的关系才开始生长——而你第一次，被人真正「接住」过。",
+"你也在学着「照顾自己」：不再用「刺激」麻痹情绪，而是认真对待自己的感受；不再透支身体，而是学会「刹车」。你发现，你的人生开始「可持续」——因为你不再只是「燃烧」，而是开始「经营」。",
+"你依然是那个冒险家，但如今，你的冒险有了「方向」——你知道自己要去哪，也知道什么时候该停下。"],
+quote:"你曾以为人生是一场冲刺，后来你才懂：真正的赢家，是既会冲刺，也会呼吸的人。",
+advice:"把你最擅长的一件事，从「玩票」做到「专业」。你会发现，深耕之后的笃定，比一百次新鲜感，都更让你感到「活着」。"},
+"圆融之境": {t:"你成了那个，既乘风破浪，也细水长流的人", lead:"你把「快」活成了「准」，把「热闹」活成了「深情」——这是冒险家的最高形态。", parts:[
+"走到这里的你，完成了人格里最深的整合：你的果断有了深思，你的自由有了责任，你的热闹有了深度。你依然是那个敢闯敢拼的人，但你已经懂得：真正的冒险，不是不顾一切地往前冲，而是知道什么时候冲、什么时候停、为什么出发。",
+"你拥有了一种「从容的锐气」：你依然反应快、行动力强，但你的快不再伤人伤己；你依然热爱刺激，但你已经学会在刺激之外，享受「平淡」的踏实——一杯茶、一次散步、一段安静的陪伴。你发现，真正的富足，不是拥有很多，而是享受当下。",
+"你学会了「深爱」：你不再只是「出现」，而是「在场」；你不再只是「行动」，而是「表达」。你会说「我想你」，会承认「我在乎」，会在一个人需要时，安静地陪ta。你发现，当你愿意「深入」，你收获的爱，比所有热闹加起来都更多。",
+"你依然是那个冒险家，但如今，你探险的终点，是「回家」——回到自己心里，也回到爱你的人身边。"],
+quote:"你用了很久才学会：人生最好的冒险，不是去多远的地方，而是敢不敢，留在一个人身边。",
+advice:"你已抵达圆满。请继续冒险，也请继续深情。你终于明白：真正的自由，不是一直在路上，而是无论走多远，都知道有人等你回家——而那个人，也包括你自己。"}
+};
+TYPE_REPORTS["ESFP"] = {
+"混沌之茧": {t:"你照亮了整个舞台，却把自己留在了幕后", lead:"你是天生的表演者，可你有没有问过：聚光灯下的那个你，是真的你吗？", parts:[
+"你是那种自带光芒的人。你一出现，空气就热闹了；你一开口，大家就笑了。你天生懂得「让人开心」，你的人生是彩色的、鲜活的、充满可能的。你是朋友里最受欢迎的那个人，是聚会里不可或缺的那个人。你的存在，本身就是一种礼物。",
+"可这个阶段的你，正在被这份光芒反噬。你太需要「被看见」，所以不断表演；你太怕「冷场」，所以从不停止热闹；你用「快乐」盖住「难过」，用「忙碌」躲开「思考」。你让所有人开心，却很久没有问过自己：我，真的开心吗？",
+"你最害怕的，是「安静」。因为安静下来，你就得面对那个问题：抛掉掌声，我还剩什么？你于是继续热闹、继续表演、继续用「新鲜」填满自己——可你知道吗？真正的你，不需要掌声，也需要被爱。",
+"你不是肤浅，你只是太早学会了「用快乐保护自己」。而我想告诉你：你可以不笑，可以难过，可以不完美——真实的你，比舞台上的你，更值得被爱。"],
+quote:"你总是那个逗笑所有人的人，可散场之后，谁来逗笑你？",
+advice:"从今天起，每天留十分钟「不表演的时间」：不笑、不闹、不说「没事」，就安静地陪自己待着。你会发现，那个不快乐的你，也需要被看见——而看见，是治愈的开始。"},
+"觉醒之芽": {t:"你开始允许自己，也有不热闹的时刻", lead:"你依然是那个开心果，但你开始懂得：真实的你，比完美的你，更可爱。", parts:[
+"你开始察觉：当你说「哈哈哈」的时候，心里其实没那么开心；当你又一次用「玩」躲开一个问题的时候，那个声音其实在说「我想被认真对待」。看见这些，不是你变丧了，而是你开始「真实」——而真实，是你成长的第一步。",
+"这个阶段的你，在练习「停下来」：停下来，不再用「热闹」填满每一分钟；停下来，不再用「逗笑」掩盖自己的情绪；停下来，认真问自己「我到底想要什么」。你发现，当你不再「表演」，你反而第一次感到「轻松」。",
+"你也在学着「深入」：把一件事做完，不再三分钟热度；把一段关系处深，不再来去如风；把一种感受说出口，不再用玩笑带过。你发现，「深入」没有想象中可怕，反而让你第一次尝到「踏实」的滋味。",
+"你依然是那个太阳，但你已经明白：真正的太阳，不是永远刺眼，而是也会落山，也会被月亮接住。"],
+quote:"你曾以为快乐是「永远在笑」，后来你才懂：真正的快乐，是敢哭、敢累、敢说「我需要你」。",
+advice:"本周对一个人说一次真心话：不是玩笑、不是段子，而是「我今天其实有点难过」。你会发现，你的真实，不会让气氛变冷，反而会让关系变暖。"},
+"整合之光": {t:"魅力与真诚，开始在你身上合流", lead:"你依然是那个让人开心的人，但你的开心，开始有「根」了。", parts:[
+"这是一个珍贵的阶段：你的感染力依然强大，但你的「逗笑」开始有了真诚——你不再只是「表演」，而是「表达」；你不再只是「热闹」，而是「温暖」。你发现，当你开始做真实的自己，你的魅力不减反增——因为真实，比完美更有吸引力。",
+"你学会了「面对」：面对自己的难过，不再用「玩」压住它；面对关系的矛盾，不再用「消失」处理它；面对未来的不确定，不再用「以后再说」糊弄它。你发现，当你开始「面对」，你的人生开始「落地」——而你第一次，感到了「安心」。",
+"你也在学着「深耕」：把热爱变成专长，把朋友变成挚友，把「此刻」延续成「长久」。你发现，深耕带来的满足，远比「新鲜」持久——就像你终于发现，真正的快乐，不是「一直有新的」，而是「旧的也依然珍贵」。",
+"你依然是那个太阳，但如今，你的光不再是「表演」出来的——它是从你心里，自然发出的。"],
+quote:"你曾以为魅力是「让所有人喜欢」，后来你才懂：真正的魅力，是让真正爱你的人，看见真实的你。",
+advice:"把你最热爱的一件事，从「玩玩」做到「专业」。你会发现，当你的天赋开始「扎根」，你的快乐也开始「持久」——而那个一直追逐掌声的你，终于可以停下来，为自己鼓掌。"},
+"圆融之境": {t:"你成了那个，既耀眼又真实的人", lead:"你终于明白：真正的光芒，不是让所有人看你，而是让懂你的人，看见你。", parts:[
+"走到这里的你，完成了人格里最深的整合：你的魅力有了深度，你的快乐有了根，你的光芒有了自己。你依然是那个能点亮全场的人，但你已经懂得：真正的表演，不是取悦所有人，而是忠于自己。",
+"你拥有了一种「笃定的光彩」：你依然爱笑，但你的笑不再是为了「应付」；你依然爱热闹，但你已经学会享受「独处」；你依然渴望被爱，但你已经不再依赖「掌声」确认价值。你终于相信：你本身，就是值得的。",
+"你学会了「深爱」：你不再只是「陪伴」，而是「交心」；你不再只是「逗笑」，而是「接住」；你不再只是「在场」，而是「在」。你发现，当你愿意「深入」，你收获的爱，比所有掌声都更真实、更持久。",
+"你依然是那个表演者，但如今，你表演的舞台，是「人生」——而你最动人的作品，是那个终于敢做自己的你。"],
+quote:"你用了很久才学会：真正的光芒，不是站在舞台中央被所有人看见，而是站在爱你的人面前，做真实的自己。",
+advice:"你已抵达圆满。请继续耀眼，也请继续真实。你最大的成就，不是让多少人喜欢你，而是终于让那个一直表演的你，住进了自己的心里。"}
+};
+
+var TYPE_NAMES = {};
+(function(){
+  var list = [["INTJ","建筑师"],["INTP","逻辑学家"],["ENTJ","指挥官"],["ENTP","辩论家"],
+    ["INFJ","提倡者"],["INFP","调停者"],["ENFJ","主人公"],["ENFP","竞选者"],
+    ["ISTJ","物流师"],["ISFJ","守卫者"],["ESTJ","总经理"],["ESFJ","执政官"],
+    ["ISTP","鉴赏家"],["ISFP","探险家"],["ESTP","企业家"],["ESFP","表演者"]];
+  list.forEach(function(p){ TYPE_NAMES[p[0]] = p[1]; });
+})();
+
+/* ================================================================
+   视图路由
+================================================================ */
+var views = document.querySelectorAll(".view");
+function go(hash){
+  var target = hash.replace("#","");
+  views.forEach(function(v){ v.classList.toggle("active", v.id === "view-"+target); });
+  window.scrollTo(0,0);
+  if(target === "quiz" && window.quizLock) location.hash = "#quiz";
+}
+document.addEventListener("click", function(e){
+  var g = e.target.closest("[data-go]");
+  if(g){ e.preventDefault(); location.hash = g.getAttribute("data-go").slice(1); }
+});
+window.addEventListener("hashchange", function(){ if(location.hash) go(location.hash); });
+if(!location.hash) location.hash = "#intro";
+
+/* ================================================================
+   授权码 + 设备绑定
+================================================================ */
+var LS_KEY = "mbti_deep_bind_v1";
+function deviceId(){
+  var id = localStorage.getItem("mbti_device_id");
+  if(!id){
+    id = "DEV-" + Math.random().toString(36).slice(2,10) + "-" + Date.now().toString(36);
+    localStorage.setItem("mbti_device_id", id);
+  }
+  return id;
+}
+function getBindings(){
+  try{ return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }catch(err){ return {}; }
+}
+function saveBindings(b){ localStorage.setItem(LS_KEY, JSON.stringify(b)); }
+function isBound(key, dev){
+  var b = getBindings();
+  return b[key] && b[key].indexOf(dev) > -1;
+}
+function tryBind(key, dev){
+  var b = getBindings();
+  if(b[key] && b[key].indexOf(dev) > -1) return {ok:true, bound:true};
+  var arr = b[key] || [];
+  if(arr.length >= LICENSE_CONFIG.maxDevicesPerKey){
+    return {ok:false, reason:"该授权码已绑定 " + arr.length + " 台设备，已达上限"};
+  }
+  arr.push(dev); b[key] = arr; saveBindings(b);
+  return {ok:true, bound:false};
+}
+var licenseInput = document.getElementById("licenseInput");
+var licenseBtn = document.getElementById("licenseBtn");
+var licenseMsg = document.getElementById("licenseMsg");
+function checkLicense(){
+  if(location.hash === "#license") return;
+  if(!localStorage.getItem("mbti_authed")){ location.hash = "license"; }
+}
+licenseBtn.addEventListener("click", function(){
+  var code = (licenseInput.value || "").trim().toUpperCase();
+  if(!code){ licenseMsg.className = "hint err"; licenseMsg.textContent = "请先输入授权码"; return; }
+  if(LICENSE_CONFIG.keys.indexOf(code) < 0){
+    licenseMsg.className = "hint err"; licenseMsg.textContent = "授权码无效，请核对后重试。";
+    return;
+  }
+  var r = tryBind(code, deviceId());
+  if(!r.ok){
+    licenseMsg.className = "hint err"; licenseMsg.textContent = r.reason;
+    return;
+  }
+  localStorage.setItem("mbti_authed", "1");
+  localStorage.setItem("mbti_license", code);
+  licenseMsg.className = "hint ok";
+  licenseMsg.textContent = r.bound ? "授权通过，本设备已绑定，直接进入。" : "验证成功，本设备已绑定。";
+  setTimeout(function(){ location.hash = "type"; }, 600);
+});
+licenseInput.addEventListener("keydown", function(e){ if(e.key === "Enter") licenseBtn.click(); });
+
+/* ================================================================
+   类型：速测 + 选择
+================================================================ */
+var QUICK = [
+  {q:"忙碌一周后，你更想怎么充电？", a:"和朋友聚一聚，把能量聊回来", b:"独处，安静地把电量充满"},
+  {q:"聊天时，你更常注意到什么？", a:"细节和眼前的事实", b:"话题背后隐藏的可能性"},
+  {q:"做重要决定时，你更靠什么？", a:"逻辑和利弊分析", b:"内心感受和价值观"},
+  {q:"出发旅行前，你通常？", a:"列好计划，按表执行", b:"随心而行，边走边定"},
+  {q:"在一个陌生场合，你会？", a:"主动开口，先认识人", b:"先观察，等熟悉再融入"},
+  {q:"别人跟你讲一个抽象的想法，你第一反应？", a:"想它的实际应用和可行性", b:"顺着想象，看它能通向哪里"},
+  {q:"朋友向你倾诉烦恼，你先给？", a:"分析和建议", b:"理解和安慰"},
+  {q:"工作/学习环境越自由，你？", a:"越容易拖延，需要截止日期", b:"越有灵感，效率越高"}
+];
+var quickState = {i:0, score:{E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0}};
+var mode = "quick", pickedType = "";
+function resetQuick(){
+  quickState = {i:0, score:{E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0}};
+  renderQuick();
+}
+function renderQuick(){
+  var s = quickState;
+  if(s.i >= QUICK.length){
+    var t = (s.score.E >= s.score.I ? "E" : "I") + (s.score.S >= s.score.N ? "S" : "N") +
+            (s.score.T >= s.score.F ? "T" : "F") + (s.score.J >= s.score.P ? "J" : "P");
+    pickedType = t;
+    document.getElementById("quickCount").textContent = "速测完成";
+    document.getElementById("quickText").textContent = "你的四字母类型是 " + t + " · " + TYPE_NAMES[t] + "。";
+    document.getElementById("quickA").style.display = "none";
+    document.getElementById("quickB").style.display = "none";
+    var sBtn = document.createElement("button");
+    sBtn.className = "btn"; sBtn.style.margin = "18px auto 0";
+    sBtn.textContent = "带着 " + t + " 开始 64 题";
+    sBtn.id = "quickGo";
+    var box = document.getElementById("quickBox").querySelector(".card");
+    box.appendChild(sBtn);
+    sBtn.addEventListener("click", function(){ startQuiz(t); });
+    return;
+  }
+  var it = QUICK[s.i];
+  document.getElementById("quickCount").textContent = "第 " + (s.i+1) + " / " + QUICK.length + " 题";
+  document.getElementById("quickText").textContent = it.q;
+  var a = document.getElementById("quickA"), b = document.getElementById("quickB");
+  a.style.display = ""; b.style.display = "";
+  a.textContent = it.a; b.textContent = it.b;
+  var old = document.getElementById("quickGo"); if(old) old.remove();
+}
+document.getElementById("modeQuick").addEventListener("click", function(){
+  mode = "quick";
+  this.classList.add("on"); document.getElementById("modePick").classList.remove("on");
+  document.getElementById("quickBox").style.display = "block";
+  document.getElementById("pickBox").style.display = "none";
+  resetQuick();
+});
+document.getElementById("modePick").addEventListener("click", function(){
+  mode = "pick";
+  this.classList.add("on"); document.getElementById("modeQuick").classList.remove("on");
+  document.getElementById("pickBox").style.display = "block";
+  document.getElementById("quickBox").style.display = "none";
+  renderTypeGrid();
+});
+function renderTypeGrid(){
+  var grid = document.getElementById("typeGrid");
+  grid.innerHTML = "";
+  Object.keys(TYPE_NAMES).forEach(function(code){
+    var d = document.createElement("div");
+    d.className = "type-cell";
+    d.innerHTML = '<div class="code">' + code + '</div><div class="cn">' + TYPE_NAMES[code] + '</div>';
+    d.addEventListener("click", function(){
+      pickedType = code;
+      grid.querySelectorAll(".type-cell").forEach(function(c){ c.classList.remove("sel"); });
+      d.classList.add("sel");
+      document.getElementById("pickBrief").textContent = "已选择 " + code + " · " + TYPE_NAMES[code] + "，这将决定你的 64 题方向。";
+      document.getElementById("typeStart").disabled = false;
+    });
+    grid.appendChild(d);
+  });
+}
+document.getElementById("typeStart").addEventListener("click", function(){ startQuiz(pickedType); });
+document.getElementById("quickA").addEventListener("click", function(){ chooseQuick(0); });
+document.getElementById("quickB").addEventListener("click", function(){ chooseQuick(1); });
+function chooseQuick(idx){
+  var s = quickState;
+  var dimIdx = s.i % 4; /* 0:EI 1:SN 2:TF 3:JP，题目按此顺序成对出现 */
+  var keys = dimIdx === 0 ? ["E","I"] : dimIdx === 1 ? ["S","N"] : dimIdx === 2 ? ["T","F"] : ["J","P"];
+  s.score[keys[idx]]++;
+  s.i++;
+  renderQuick();
+}
+
+/* ================================================================
+   答题引擎
+================================================================ */
+var quizState = null, quizLock = false;
+window.addEventListener("beforeunload", function(e){
+  if(quizLock && quizState && quizState.i < quizState.answers.length){
+    e.preventDefault(); e.returnValue = "";
+  }
+});
+function startQuiz(typeCode){
+  var dims = TYPE_DIMS[typeCode];
+  if(!dims){ toast("该类型的题库正在加载，请稍后重试"); return; }
+  var answers = [];
+  dims.dims.forEach(function(d){ d.q.forEach(function(){ answers.push(null); }); });
+  quizState = {type:typeCode, i:0, answers:answers};
+  quizLock = true;
+  location.hash = "quiz";
+  renderQuiz();
+}
+function renderQuiz(){
+  if(!quizState) return;
+  var dims = TYPE_DIMS[quizState.type];
+  var di = Math.floor(quizState.i / 8);
+  var qi = quizState.i % 8;
+  var dim = dims.dims[di];
+  document.getElementById("quizDim").textContent = "盲区 " + (di+1) + " / " + dims.dims.length + " · " + dim.n;
+  document.getElementById("quizCount").textContent = "第 " + (quizState.i+1) + " / " + quizState.answers.length + " 题";
+  document.getElementById("quizBar").style.width = (quizState.i / quizState.answers.length * 100) + "%";
+  document.getElementById("quizText").textContent = dim.q[qi];
+  var scale = document.getElementById("quizScale");
+  scale.innerHTML = "";
+  for(var v=1; v<=5; v++){
+    (function(val){
+      var b = document.createElement("button");
+      b.textContent = val;
+      if(quizState.answers[quizState.i] === val) b.classList.add("on");
+      b.addEventListener("click", function(){ setAnswer(val); });
+      scale.appendChild(b);
+    })(v);
+  }
+  document.getElementById("quizPrev").disabled = quizState.i === 0;
+  document.getElementById("quizPrev").style.opacity = quizState.i === 0 ? .4 : 1;
+  var cur = quizState.answers[quizState.i];
+  document.getElementById("quizSum").textContent = cur ? "已选择 " + cur + " 分（5 分 = 最贴近你）" : "请选择 1–5 分：越贴合你，分数越高";
+  var next = document.getElementById("quizNext");
+  next.textContent = quizState.i === quizState.answers.length - 1 ? "查看我的深度报告" : "下一题";
+  next.disabled = cur === null;
+}
+function setAnswer(v){
+  quizState.answers[quizState.i] = v;
+  renderQuiz();
+  if(quizState.i < quizState.answers.length - 1) setTimeout(function(){ quizState.i++; renderQuiz(); }, 180);
+}
+document.getElementById("quizPrev").addEventListener("click", function(){
+  if(quizState.i > 0){ quizState.i--; renderQuiz(); }
+});
+document.getElementById("quizNext").addEventListener("click", function(){
+  if(quizState.answers[quizState.i] === null){ toast("请先选择一个分数"); return; }
+  if(quizState.i < quizState.answers.length - 1){ quizState.i++; renderQuiz(); }
+  else finishQuiz();
+});
+function finishQuiz(){
+  quizLock = false;
+  var dims = TYPE_DIMS[quizState.type];
+  var dimScores = [];
+  var total = 0;
+  dims.dims.forEach(function(d, di){
+    var s = 0;
+    for(var k=di*8; k<di*8+8; k++) s += quizState.answers[k] || 0;
+    dimScores.push(s); total += s;
+  });
+  var blind = Math.round(total / (dims.dims.length * 8 * 5) * 100);
+  var stage = STAGES[3];
+  for(var i=0;i<STAGES.length;i++){ if(blind >= STAGES[i].lo && blind <= STAGES[i].hi){ stage = STAGES[i]; break; } }
+  showResult(quizState.type, stage, blind, dimScores);
+}
+/* 结果渲染 */
+var lastResult = null;
+function showResult(typeCode, stage, blind, dimScores){
+  var t = TYPE_DIMS[typeCode];
+  var report = TYPE_REPORTS[typeCode] && TYPE_REPORTS[typeCode][stage.n];
+  if(!report){ toast("报告生成中，请稍后再试"); return; }
+  lastResult = {type:typeCode, stage:stage, blind:blind, dimScores:dimScores};
+  document.getElementById("resCode").textContent = typeCode;
+  document.getElementById("resTypeMeta").innerHTML = TYPE_NAMES[typeCode] + "<br>" + t.tag;
+  var sb = document.getElementById("resStage");
+  sb.className = "stage-badge " + stage.c;
+  sb.textContent = "阶位 · " + stage.n;
+  document.getElementById("resTitle").textContent = report.t;
+  document.getElementById("resLead").textContent = report.lead;
+  document.getElementById("resBody").innerHTML = report.parts.map(function(p){
+    return p.replace(/「([^」]+)」/g, "<b>「$1」</b>");
+  }).join("\n\n");
+  document.getElementById("resQuote").innerHTML = "「" + report.quote + "」";
+  document.getElementById("resAdvice").textContent = report.advice;
+  /* 八维盲区条 */
+  var bars = document.getElementById("resDims");
+  bars.innerHTML = "";
+  t.dims.forEach(function(d, i){
+    var pct = Math.round(dimScores[i] / 40 * 100);
+    var row = document.createElement("div");
+    row.className = "dim-row";
+    row.innerHTML = '<div class="lab"><b>' + d.n + '</b><em>' + pct + '</em></div>' +
+      '<div class="track"><i style="width:' + pct + '%"></i></div>';
+    bars.appendChild(row);
+  });
+  location.hash = "result";
+  setTimeout(function(){ drawCard(); }, 120);
+}
+
+/* ================================================================
+   档案卡（Canvas 晒图）
+================================================================ */
+function cardId(){
+  var d = new Date();
+  var y = d.getFullYear(), m = ("0"+(d.getMonth()+1)).slice(-2), dd = ("0"+d.getDate()).slice(-2);
+  var r = Math.random().toString(36).slice(2,8).toUpperCase();
+  return {no:"MB-" + y + "-" + m + dd + "-" + r, date:y + " 年 " + (+m) + " 月 " + dd + " 日"};
+}
+function drawCard(){
+  var cv = document.getElementById("cardCanvas");
+  var ctx = cv.getContext("2d");
+  var W = cv.width, H = cv.height;
+  var id = cardId();
+  var r = lastResult;
+  /* 背景 */
+  var g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,"#0B0E1A"); g.addColorStop(.55,"#12162B"); g.addColorStop(1,"#0B0E1A");
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  /* 星点 */
+  for(var i=0;i<70;i++){
+    var x = Math.random()*W, y = Math.random()*H;
+    ctx.fillStyle = "rgba(233,237,248," + (Math.random()*.4+.08) + ")";
+    ctx.beginPath(); ctx.arc(x,y,Math.random()*1.6+.3,0,7); ctx.fill();
+  }
+  /* 光晕 */
+  var hg = ctx.createRadialGradient(W*.78,H*.16,0,W*.78,H*.16,360);
+  hg.addColorStop(0,"rgba(232,184,122,.22)"); hg.addColorStop(1,"transparent");
+  ctx.fillStyle = hg; ctx.fillRect(0,0,W,H);
+  /* 顶栏 */
+  ctx.textAlign = "center";
+  ctx.fillStyle = "rgba(232,184,122,.9)";
+  ctx.font = "18px 'Akzidenz-Grotesk','Akzidenz Grotesk','Microsoft YaHei',sans-serif";
+  ctx.fillText("— 人格深处 · MBTI 高阶版 —", W/2, 78);
+  /* 类型 */
+  ctx.fillStyle = "#F2D5A7";
+  ctx.font = "bold 150px 'Akzidenz-Grotesk','Akzidenz Grotesk','Microsoft YaHei','SimHei',sans-serif";
+  ctx.fillText(r.type, W/2, 300);
+  ctx.fillStyle = "#A7B0CA";
+  ctx.font = "26px 'Akzidenz-Grotesk','Akzidenz Grotesk','Microsoft YaHei',sans-serif";
+  ctx.fillText(TYPE_NAMES[r.type], W/2, 352);
+  /* 阶位 */
+  var stageColors = {1:"#C7C0F0",2:"#E8B87A",3:"#9CC5A1",4:"#E9EDF8"};
+  var sc = stageColors[STAGES.indexOf(r.stage)+1] || "#E8B87A";
+  ctx.strokeStyle = sc; ctx.lineWidth = 2;
+  var st = "阶位 · " + r.stage.n;
+  ctx.font = "24px 'Akzidenz-Grotesk','Akzidenz Grotesk','Microsoft YaHei',sans-serif";
+  var tw = ctx.measureText(st).width;
+  ctx.strokeRect(W/2-tw/2-26, 386, tw+52, 52);
+  ctx.fillStyle = sc; ctx.fillText(st, W/2, 421);
+  /* 金句 */
+  var quote = TYPE_REPORTS[r.type] ? TYPE_REPORTS[r.type][r.stage.n].quote : "";
+  ctx.fillStyle = "#C9D4F0";
+  ctx.font = "26px 'Akzidenz-Grotesk','Akzidenz Grotesk',Arial,'Songti SC','SimSun',sans-serif";
+  wrapText(ctx, "「" + quote + "」", W/2, 560, W-140, 46, 2);
+  /* 盲区条 */
+  var t = TYPE_DIMS[r.type];
+  var bx = 130, by = 700, bw = 640, rowh = 52;
+  ctx.textAlign = "left";
+  t.dims.forEach(function(d, idx){
+    var pct = Math.round(r.dimScores[idx]/40*100);
+    var y = by + idx*rowh;
+    ctx.fillStyle = "#A7B0CA";
+    ctx.font = "22px 'Akzidenz-Grotesk','Akzidenz Grotesk','Microsoft YaHei',sans-serif";
+    ctx.fillText(d.n, bx, y);
+    ctx.fillStyle = "rgba(233,237,248,.12)";
+    ctx.fillRect(bx, y+12, bw, 12);
+    var lg = ctx.createLinearGradient(bx,0,bx+bw,0);
+    lg.addColorStop(0,"#8B7FD4"); lg.addColorStop(1,"#E8B87A");
+    ctx.fillStyle = lg;
+    ctx.fillRect(bx, y+12, bw*pct/100, 12);
+    ctx.fillStyle = "#E8B87A";
+    ctx.font = "22px 'Akzidenz-Grotesk','Akzidenz Grotesk','Microsoft YaHei',sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(pct, W-130, y);
+    ctx.textAlign = "left";
+  });
+  /* 盲区指数 */
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#6E7694";
+  ctx.font = "20px 'Akzidenz-Grotesk','Akzidenz Grotesk','Microsoft YaHei',sans-serif";
+  ctx.fillText("盲区暴露指数  " + r.blind + " / 100", W/2, by + t.dims.length*rowh + 34);
+  /* 档案信息 */
+  ctx.fillStyle = "#6E7694";
+  ctx.font = "21px 'Akzidenz-Grotesk','Akzidenz Grotesk','Microsoft YaHei',sans-serif";
+  ctx.fillText("档案编号  " + id.no, W/2, H-120);
+  ctx.fillText("建档日期  " + id.date, W/2, H-72);
+  ctx.fillStyle = "rgba(232,184,122,.55)";
+  ctx.font = "17px 'Akzidenz-Grotesk','Akzidenz Grotesk','Microsoft YaHei',sans-serif";
+  ctx.fillText("MBTI 高阶版 · 人格深处", W/2, H-40);
+}
+function wrapText(ctx, text, x, y, maxW, lineH, maxLines){
+  var chars = text.split("");
+  var line = "";
+  var lines = 0;
+  for(var i=0;i<chars.length;i++){
+    var test = line + chars[i];
+    if(ctx.measureText(test).width > maxW && line){
+      ctx.fillText(line, x, y); line = chars[i]; y += lineH; lines++;
+      if(lines >= maxLines){ ctx.fillText("…", x, y); return; }
+    } else { line = test; }
+  }
+  ctx.fillText(line, x, y);
+}
+document.getElementById("cardDownload").addEventListener("click", function(){
+  var a = document.createElement("a");
+  var r = lastResult;
+  a.download = "人格档案_" + r.type + "_" + r.stage.n + ".png";
+  a.href = document.getElementById("cardCanvas").toDataURL("image/png");
+  a.click();
+  toast("档案卡已下载");
+});
+document.getElementById("btnRetest").addEventListener("click", function(){
+  if(confirm("确定再测一次吗？本次结果将不会被保存。")){
+    location.hash = "type"; quizState = null;
+  }
+});
+document.getElementById("btnHome").addEventListener("click", function(){ location.hash = "intro"; });
+
+/* ================================================================
+   Toast
+================================================================ */
+var toastTimer = null;
+function toast(msg){
+  var t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove("show"); }, 2400);
+}
+</script>
+</body>
+</html>
