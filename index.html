@@ -989,18 +989,34 @@ var TYPE_NAMES = {};
    视图路由
 ================================================================ */
 var views = document.querySelectorAll(".view");
+var PROTECTED_VIEWS = ["type", "answer", "result"];
 function go(hash){
   var target = hash.replace("#","");
+  var authed = !!localStorage.getItem("mbti_authed");
+  if(PROTECTED_VIEWS.indexOf(target) > -1 && !authed){
+    if(location.hash !== "#license") location.hash = "license";
+    return;
+  }
+  if(target === "license" && authed){
+    if(location.hash !== "#type") location.hash = "type";
+    return;
+  }
   views.forEach(function(v){ v.classList.toggle("active", v.id === "view-"+target); });
   window.scrollTo(0,0);
   if(target === "quiz" && window.quizLock) location.hash = "#quiz";
+  if(PROTECTED_VIEWS.indexOf(target) > -1) localStorage.setItem("mbti_last_view", target);
 }
 document.addEventListener("click", function(e){
   var g = e.target.closest("[data-go]");
   if(g){ e.preventDefault(); location.hash = g.getAttribute("data-go").slice(1); }
 });
 window.addEventListener("hashchange", function(){ if(location.hash) go(location.hash); });
-if(!location.hash) location.hash = "#intro";
+if(!location.hash){
+  var authed = !!localStorage.getItem("mbti_authed");
+  var last = localStorage.getItem("mbti_last_view");
+  location.hash = authed ? (last ? "#"+last : "#type") : "#intro";
+}
+go(location.hash);
 
 /* ================================================================
    授权码 + 设备绑定
